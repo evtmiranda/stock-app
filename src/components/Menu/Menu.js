@@ -1,5 +1,5 @@
 import React from 'react';
-import { browserHistory } from 'react-router';
+import { Link } from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
@@ -40,23 +40,14 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(3),
   },
   toolbar: theme.mixins.toolbar,
+  link: {
+    textDecoration: 'none',
+    color: 'inherit'
+  }
 }));
 
 export default function ClippedDrawer() {
   const classes = useStyles();
-  const [selectedIndex, setSelectedIndex] = React.useState(0);
-
-  function handleListItemClick(event, index, text) {
-    switch (text) {
-      case "Usuários":
-        browserHistory.push("user");
-        break;
-      default:
-        break;
-    }
-
-    setSelectedIndex(index);
-  }
 
   return (
     <div className={classes.root}>
@@ -77,31 +68,42 @@ export default function ClippedDrawer() {
       >
         <div className={classes.toolbar} />
         <List>
-          {['Tela Inicial', 'Estoque', 'Usuários', 'Relatórios', 'Sair'].map((text, index) => (
-            <ListItem
-              button
-              key={text}
-              selected={selectedIndex === index}
-              onClick={event => handleListItemClick(event, index, text)}
-            >
-              {text === "Tela Inicial" && (
-                <ListItemIcon><HomeIcon /></ListItemIcon>
-              )}
-              {text === "Estoque" && (
-                <ListItemIcon><StoreIcon /></ListItemIcon>
-              )}
-              {text === "Usuários" && (
-                <ListItemIcon><SupervisorAccountIcon /></ListItemIcon>
-              )}
-              {text === "Relatórios" && (
-                <ListItemIcon><TimelineIcon /></ListItemIcon>
-              )}
-              {text === "Sair" && (
-                <ListItemIcon><CloseIcon /></ListItemIcon>
-              )}
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
+          {
+            ['Tela Inicial', 'Estoque', 'Usuários', 'Relatórios', 'Sair'].map((text, index) => {
+              const routes = {
+                "Tela Inicial": "home",
+                "Estoque": "",
+                "Usuários": "user",
+                "Relatórios": "",
+                "Sair": ""
+              };
+              
+              return (
+                <Link to={routes[text]} className={classes.link}>
+                  <ListItem
+                    button
+                    key={text}
+                  >
+                    {text === "Tela Inicial" && (
+                      <ListItemIcon><HomeIcon /></ListItemIcon>
+                    )}
+                    {text === "Estoque" && (
+                      <ListItemIcon><StoreIcon /></ListItemIcon>
+                    )}
+                    {text === "Usuários" && (
+                      <ListItemIcon><SupervisorAccountIcon /></ListItemIcon>
+                    )}
+                    {text === "Relatórios" && (
+                      <ListItemIcon><TimelineIcon /></ListItemIcon>
+                    )}
+                    {text === "Sair" && (
+                      <ListItemIcon><CloseIcon /></ListItemIcon>
+                    )}
+                    <ListItemText primary={text} />
+                  </ListItem>
+                </Link>
+              );
+            })}
         </List>
       </Drawer>
       <main className={classes.content}>
