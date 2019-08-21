@@ -2,17 +2,17 @@ import React, { Component } from 'react'
 import Menu from '../../components/Menu/Menu'
 import './styles.css'
 
-class User extends Component {
+class Home extends Component {
     render() {
         return (
             <React.Fragment>
                 <Menu />
                 <div class="withMenu">
-                    <h1>Usuários</h1>
+                    <h1>Estoque</h1>
                 </div>
             </React.Fragment>
         )
     }
 }
 
-export default User;
+export default Home;

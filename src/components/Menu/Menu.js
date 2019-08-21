@@ -72,10 +72,10 @@ export default function ClippedDrawer() {
             ['Tela Inicial', 'Estoque', 'Usuários', 'Relatórios', 'Sair'].map((text, index) => {
               const routes = {
                 "Tela Inicial": "home",
-                "Estoque": "",
-                "Usuários": "user",
-                "Relatórios": "",
-                "Sair": ""
+                "Estoque": "stock",
+                "Usuários": "users",
+                "Relatórios": "reports",
+                "Sair": "logoff"
               };
               
               return (

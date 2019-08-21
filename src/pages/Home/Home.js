@@ -8,7 +8,7 @@ class Home extends Component {
             <React.Fragment>
                 <Menu />
                 <div class="withMenu">
-                    <h1>oioi</h1>
+                    <h1>Tela inicial</h1>
                 </div>
             </React.Fragment>
         )
