@@ -1,11 +1,9 @@
 import React, { Component } from 'react'
 import Menu from '../../components/Menu/Menu'
+import formatDate from '../../utils/formatDate'
 import MaterialTable from "material-table";
-
 import './styles.css'
 import api from '../../services/api'
-
-import formatDate from '../../utils/formatDate'
 
 class User extends Component {
     state = {
@@ -26,19 +24,22 @@ class User extends Component {
     }
 
     render() {
+        const body = (
+            <MaterialTable
+                columns={[
+                    { title: "Nome", field: "name" },
+                    { title: "Criado em", field: "createdAt" }
+                ]}
+                data={this.state.usersDataTable}
+                title="Usuários"
+            />
+        )
+
         return (
             <React.Fragment>
-                <Menu />
-                <div className="withMenu">
-                    <MaterialTable
-                        columns={[
-                            { title: "Nome", field: "name" },
-                            { title: "Criado em", field: "createdAt" }
-                        ]}
-                        data={this.state.usersDataTable}
-                        title="Usuários"
-                    />
-                </div>
+                <Menu
+                    body={body}
+                />
             </React.Fragment>
         )
     }

@@ -4,12 +4,13 @@ import './styles.css'
 
 class Home extends Component {
     render() {
+        const body = (
+            <h1>Estoque</h1>
+        )
+
         return (
             <React.Fragment>
-                <Menu />
-                <div className="withMenu">
-                    <h1>Estoque</h1>
-                </div>
+                <Menu body={body} />
             </React.Fragment>
         )
     }
