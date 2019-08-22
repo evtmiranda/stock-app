@@ -12,6 +12,5 @@ body {
 }
 
 .withMenu {
-  margin-left: 260px;
-  margin-top: 50px;
+  margin: 50px 21px 21px 260px;
 }
