@@ -1,20 +1,17 @@
 import React from 'react'
 import { BrowserRouter, Switch, Route } from 'react-router-dom'
-import Login from './pages/Login/Login.js'
-import Home from './pages/Home/Home.js'
-import User from './pages/User/User.js'
-import Stock from './pages/Stock/Stock'
-import Reports from './pages/Reports/Reports'
+import { Login, Home, User, Stock, Reports, Logoff } from './pages'
+import { PrivateRoute } from './components';
 
 const Routes = () => (
     <BrowserRouter>
         <Switch>
             <Route exact path='/' component={Login} />
-            <Route path='/home' component={Home} />
-            <Route path='/users' component={User} />
-            <Route path='/stock' component={Stock} />
-            <Route path='/reports' component={Reports} />
-            <Route path='/logoff' component={Login} />
+            <PrivateRoute path='/home' component={Home} />
+            <PrivateRoute path='/users' component={User} />
+            <PrivateRoute path='/stock' component={Stock} />
+            <PrivateRoute path='/reports' component={Reports} />
+            <PrivateRoute path='/logoff' component={Logoff} />
         </Switch>
     </BrowserRouter>
 )
