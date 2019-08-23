@@ -54,7 +54,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function ClippedDrawer(props) {
+export const Menu = (props) => {
   const classes = useStyles();
   const { container } = props;
   const theme = useTheme();
