@@ -1,19 +1,19 @@
 import React, { Component } from 'react'
-import Menu from '../../components/Menu/Menu'
+import { Menu } from '../../components'
 import formatDate from '../../utils/formatDate'
 import MaterialTable from "material-table";
 import './styles.css'
-import api from '../../services/api'
+import { userService } from '../../services'
 
-class User extends Component {
+export class User extends Component {
     state = {
         usersDataTable: []
     }
 
-    async loadUsers(page = 1) {
-        const response = await api.get(`v1/user?page=${page}`)
+    async loadUsers() {
+        const filters = `deleted=false`;
 
-        const users = response.data;
+        const users = await userService.get(filters);
         const usersDataTable = users.map(user => ({ name: user.name, createdAt: formatDate(user.createdAt) }));
 
         this.setState({ usersDataTable: usersDataTable });
@@ -44,5 +44,3 @@ class User extends Component {
         )
     }
 }
-
-export default User;
