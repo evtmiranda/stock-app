@@ -14,7 +14,12 @@ export class User extends Component {
         const filters = `deleted=false`;
 
         const users = await userService.get(filters);
-        const usersDataTable = users.map(user => ({ name: user.name, createdAt: formatDate(user.createdAt) }));
+
+        const usersDataTable = users.map(user => ({
+            id: user._id,
+            name: user.name,
+            createdAt: formatDate(user.createdAt)
+        }));
 
         this.setState({ usersDataTable: usersDataTable });
     }
@@ -23,15 +28,31 @@ export class User extends Component {
         await this.loadUsers();
     }
 
+    async delete(rowData) {
+        const { id } = rowData;
+
+        await userService.remove(id);
+    }
+
     render() {
         const body = (
             <MaterialTable
+                title="Usuários"
                 columns={[
                     { title: "Nome", field: "name" },
                     { title: "Criado em", field: "createdAt" }
                 ]}
                 data={this.state.usersDataTable}
-                title="Usuários"
+                actions={[
+                    {
+                        icon: 'delete',
+                        tooltip: 'Apagar usuário',
+                        onClick: (event, rowData) => this.delete(rowData)
+                    }
+                ]}
+                options={{
+                    actionsColumnIndex: -1
+                }}
             />
         )
 
