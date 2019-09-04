@@ -6,7 +6,8 @@ import { isUndefined } from 'util';
 export const userService = {
     authenticate,
     logout,
-    get
+    get,
+    remove
 };
 
 async function authenticate(username, password) {
@@ -38,6 +39,18 @@ async function get(filters) {
     const users = response.data;
 
     return users;
+}
+
+async function remove(id) {
+    const config = {
+        headers: authHeader()
+    };
+
+    const response = await api.delete(`v1/users/${id}`, config)
+
+    const rowsDeleted = response.data;
+
+    return rowsDeleted;
 }
 
 // function get() {
