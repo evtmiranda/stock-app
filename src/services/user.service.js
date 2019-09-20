@@ -11,7 +11,7 @@ export const userService = {
 };
 
 async function authenticate(username, password) {
-    const response = await api.get(`v1/users?deleted=false&username=${username}`)
+    const response = await api.get(`v1/users?username=${username}`)
     const user = response.data[0];
 
     if (!isUndefined(user) && user.password === password) {

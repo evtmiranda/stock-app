@@ -11,7 +11,7 @@ export class User extends Component {
     }
 
     async loadUsers() {
-        const filters = `deleted=false`;
+        const filters = '';
 
         const users = await userService.get(filters);
 
