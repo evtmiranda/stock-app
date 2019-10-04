@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { Redirect } from 'react-router-dom'
 import { Menu } from '../../components'
 import MaterialTable from "material-table";
 import { profileService } from '../../services'
@@ -6,7 +7,20 @@ import formatDate from '../../utils/formatDate'
 
 export class UserProfile extends Component {
     state = {
-        profilesDataTable: []
+        profilesDataTable: [],
+        redirectToAddUser: false
+    }
+
+    setRedirectToAddUser = () => {
+        this.setState({
+            redirectToAddUser: true
+        })
+    }
+
+    renderRedirect = () => {
+        if (this.state.redirectToAddUser) {
+            return <Redirect to='/home' />
+        }
     }
 
     async componentDidMount() {
@@ -30,23 +44,26 @@ export class UserProfile extends Component {
 
     render() {
         const body = (
-            <MaterialTable
-                title="Perfis de Usuário"
-                columns={[
-                    { title: "Nome", field: "name" },
-                    { title: "Descrição", field: "description" },
-                    { title: "Criado em", field: "createdAt" }
-                ]}
-                data={this.state.profilesDataTable}
-                actions={[
-                    {
-                        icon: 'add',
-                        tooltip: 'Adicionar perfil',
-                        isFreeAction: true,
-                        onClick: (event) => alert("You want to add a new row")
-                    }
-                ]}
-            />
+            <div>
+                {this.renderRedirect()}
+                <MaterialTable
+                    title="Perfis de Usuário"
+                    columns={[
+                        { title: "Nome", field: "name" },
+                        { title: "Descrição", field: "description" },
+                        { title: "Criado em", field: "createdAt" }
+                    ]}
+                    data={this.state.profilesDataTable}
+                    actions={[
+                        {
+                            icon: 'add',
+                            tooltip: 'Adicionar perfil',
+                            isFreeAction: true,
+                            onClick: this.setRedirectToAddUser
+                        }
+                    ]}
+                />
+            </div>
         )
 
         return (
