@@ -1,3 +1,4 @@
 import axios from 'axios'
+import { API_URL } from '../config/constants'
 
-export const api = axios.create({ baseURL: 'https://fit-stock-api.herokuapp.com/api/' })
+export const api = axios.create({ baseURL: API_URL })
