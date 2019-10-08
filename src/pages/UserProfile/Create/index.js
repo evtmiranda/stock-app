@@ -1,6 +1,5 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
-import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import TextField from '@material-ui/core/TextField';
@@ -8,6 +7,13 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Divider from '@material-ui/core/Divider';
+import FormControl from '@material-ui/core/FormControl';
+import FormGroup from '@material-ui/core/FormGroup';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 
 export default function Create(action) {
   const [open, setOpen] = React.useState(false);
@@ -23,7 +29,7 @@ export default function Create(action) {
   };
 
   return (
-    <div style={{ overflow: 'hidden' }}>
+    <React.Fragment>
       <Tooltip title={action.action.tooltip}>
         <IconButton
           aria-label={action.action.icon}
@@ -31,7 +37,9 @@ export default function Create(action) {
           tooltip="teste"
           onClick={handleClickOpen}
         >
-          <Icon color="primary">{action.action.icon}</Icon>
+          <Button variant="contained" color="primary" >
+            Adicionar
+          </Button>
         </IconButton>
       </Tooltip>
 
@@ -52,15 +60,80 @@ export default function Create(action) {
             fullWidth
           />
           <TextField
-            autoFocus
             margin="dense"
             id="description"
             label="Descrição"
             type="text"
             fullWidth
           />
-          {/* module
-          permission */}
+          <FormControl component="fieldset">
+            <FormGroup row style={{ marginTop: 20, marginBottom: 30 }}>
+              <Typography component="div">
+                <Box fontWeight="1500" m={0}>
+                  Permissões
+                </Box>
+              </Typography>
+            </FormGroup>
+            <FormGroup row style={{ marginTop: 10 }}>
+              <Typography component="div">
+                <Box fontWeight="fontWeightMedium" m={0}>
+                  Tela Inicial
+                </Box>
+              </Typography>
+            </FormGroup>
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    color="primary"
+                  />
+                }
+                label="Visualizar"
+              />
+            </FormGroup>
+            <Divider variant="fullWidth" />
+            <FormGroup row style={{ marginTop: 10 }}>
+              <Typography component="div">
+                <Box fontWeight="fontWeightMedium" m={0}>
+                  Estoque
+                </Box>
+              </Typography>
+            </FormGroup>
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    color="primary"
+                  />
+                }
+                label="Visualizar"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    color="primary"
+                  />
+                }
+                label="Editar"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    color="primary"
+                  />
+                }
+                label="Apagar"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    color="primary"
+                  />
+                }
+                label="Adicionar"
+              />
+            </FormGroup>
+          </FormControl>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
@@ -71,6 +144,6 @@ export default function Create(action) {
           </Button>
         </DialogActions>
       </Dialog>
-    </div >
+    </React.Fragment>
   );
 }

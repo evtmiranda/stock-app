@@ -2,6 +2,9 @@ import React, { Component } from 'react'
 import { Menu } from '../../components'
 import formatDate from '../../utils/formatDate'
 import MaterialTable from "material-table";
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
+import Icon from '@material-ui/core/Icon';
 import './styles.css'
 import { userService } from '../../services'
 
@@ -50,8 +53,42 @@ export class User extends Component {
                         onClick: (event, rowData) => this.delete(rowData)
                     }
                 ]}
+                components={{
+                    Action: props => {
+                        return (
+                            <Tooltip title={props.action.tooltip}>
+                                <IconButton aria-label={props.action.icon} size="small"
+                                    onClick={props.action.onClick}
+                                >
+                                    <Icon>{props.action.icon}</Icon>
+                                </IconButton>
+                            </Tooltip>
+                        )
+                    }
+
+                }}
                 options={{
-                    actionsColumnIndex: -1
+                    actionsColumnIndex: -1,
+                    search: false
+                }}
+                localization={{
+                    pagination: {
+                        labelDisplayedRows: '{from}-{to} de {count}',
+                        labelRowsSelect: 'linhas'
+                    },
+                    toolbar: {
+                        nRowsSelected: '{0} linha(s) selecionadas',
+
+                    },
+                    header: {
+                        actions: 'Ações'
+                    },
+                    body: {
+                        emptyDataSourceMessage: 'Sem informações',
+                        filterRow: {
+                            filterTooltip: 'Filter'
+                        }
+                    }
                 }}
             />
         )

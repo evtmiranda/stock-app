@@ -61,11 +61,19 @@ export class UserProfile extends Component {
                         { title: "Criado em", field: "createdAt" }
                     ]}
                     data={this.state.profilesDataTable}
+                    options={{
+                        search: false,
+                        actionsColumnIndex: -1,
+                    }}
                     actions={[
                         {
                             icon: 'add',
                             tooltip: 'Adicionar perfil',
                             isFreeAction: true,
+                        },
+                        {
+                            icon: 'delete',
+                            tooltip: 'Apagar perfil'
                         }
                     ]}
                     components={{
@@ -87,6 +95,25 @@ export class UserProfile extends Component {
                                 )
                             }
 
+                        }
+                    }}
+                    localization={{
+                        pagination: {
+                            labelDisplayedRows: '{from}-{to} de {count}',
+                            labelRowsSelect: 'linhas'
+                        },
+                        toolbar: {
+                            nRowsSelected: '{0} linha(s) selecionadas',
+
+                        },
+                        header: {
+                            actions: 'Ações'
+                        },
+                        body: {
+                            emptyDataSourceMessage: 'Sem informações',
+                            filterRow: {
+                                filterTooltip: 'Filter'
+                            }
                         }
                     }}
                 />
