@@ -62,13 +62,18 @@ export class UserProfile extends Component {
                     ]}
                     data={this.state.profilesDataTable}
                     options={{
-                        search: false
+                        search: false,
+                        actionsColumnIndex: -1,
                     }}
                     actions={[
                         {
                             icon: 'add',
                             tooltip: 'Adicionar perfil',
                             isFreeAction: true,
+                        },
+                        {
+                            icon: 'delete',
+                            tooltip: 'Apagar perfil'
                         }
                     ]}
                     components={{
