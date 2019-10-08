@@ -63,7 +63,7 @@ export class UserProfile extends Component {
                     data={this.state.profilesDataTable}
                     options={{
                         search: false,
-                        actionsColumnIndex: -1,
+                        actionsColumnIndex: -1
                     }}
                     actions={[
                         {
@@ -73,7 +73,7 @@ export class UserProfile extends Component {
                         },
                         {
                             icon: 'delete',
-                            tooltip: 'Apagar perfil'
+                            tooltip: 'Excluir perfil'
                         }
                     ]}
                     components={{
