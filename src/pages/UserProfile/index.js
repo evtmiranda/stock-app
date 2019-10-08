@@ -1,14 +1,21 @@
 import React, { Component } from 'react'
 import { Redirect } from 'react-router-dom'
-import { Menu } from '../../components'
+import Create from './Create'
 import MaterialTable from "material-table";
+import Icon from '@material-ui/core/Icon';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
+import { Menu } from '../../components'
 import { profileService } from '../../services'
 import formatDate from '../../utils/formatDate'
 
 export class UserProfile extends Component {
-    state = {
-        profilesDataTable: [],
-        redirectToAddUser: false
+    constructor(props) {
+        super(props)
+        this.state = {
+            profilesDataTable: [],
+            redirectToAddUser: false
+        }
     }
 
     setRedirectToAddUser = () => {
@@ -59,9 +66,29 @@ export class UserProfile extends Component {
                             icon: 'add',
                             tooltip: 'Adicionar perfil',
                             isFreeAction: true,
-                            onClick: this.setRedirectToAddUser
                         }
                     ]}
+                    components={{
+                        Action: props => {
+                            if (props.action.icon === 'add') {
+                                return (
+                                    <Create action={props.action} />
+                                )
+                            }
+                            else {
+                                return (
+                                    <Tooltip title={props.action.tooltip}>
+                                        <IconButton aria-label={props.action.icon} size="small"
+                                            onClick={props.action.onClick}
+                                        >
+                                            <Icon>{props.action.icon}</Icon>
+                                        </IconButton>
+                                    </Tooltip>
+                                )
+                            }
+
+                        }
+                    }}
                 />
             </div>
         )
