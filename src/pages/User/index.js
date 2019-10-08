@@ -49,7 +49,7 @@ export class User extends Component {
                 actions={[
                     {
                         icon: 'delete',
-                        tooltip: 'Apagar usuário',
+                        tooltip: 'Excluir usuário',
                         onClick: (event, rowData) => this.delete(rowData)
                     }
                 ]}

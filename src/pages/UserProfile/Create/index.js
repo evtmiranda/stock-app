@@ -122,7 +122,7 @@ export default function Create(action) {
                     color="primary"
                   />
                 }
-                label="Apagar"
+                label="Excluir"
               />
               <FormControlLabel
                 control={
