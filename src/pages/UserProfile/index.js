@@ -61,6 +61,9 @@ export class UserProfile extends Component {
                         { title: "Criado em", field: "createdAt" }
                     ]}
                     data={this.state.profilesDataTable}
+                    options={{
+                        search: false
+                    }}
                     actions={[
                         {
                             icon: 'add',
@@ -87,6 +90,25 @@ export class UserProfile extends Component {
                                 )
                             }
 
+                        }
+                    }}
+                    localization={{
+                        pagination: {
+                            labelDisplayedRows: '{from}-{to} de {count}',
+                            labelRowsSelect: 'linhas'
+                        },
+                        toolbar: {
+                            nRowsSelected: '{0} linha(s) selecionadas',
+
+                        },
+                        header: {
+                            actions: 'Ações'
+                        },
+                        body: {
+                            emptyDataSourceMessage: 'Sem informações',
+                            filterRow: {
+                                filterTooltip: 'Filter'
+                            }
                         }
                     }}
                 />
