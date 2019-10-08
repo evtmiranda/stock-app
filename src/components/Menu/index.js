@@ -15,6 +15,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import HomeIcon from '@material-ui/icons/Home';
 import SupervisorAccountIcon from '@material-ui/icons/SupervisorAccount';
+import PermIdentityIcon from '@material-ui/icons/PermIdentity';
 import TimelineIcon from '@material-ui/icons/Timeline';
 import CloseIcon from '@material-ui/icons/Close';
 import StoreIcon from '@material-ui/icons/Store';
@@ -70,11 +71,12 @@ export const Menu = (props) => {
       <Divider />
       <List>
         {
-          ['Tela Inicial', 'Estoque', 'Usuários', 'Relatórios', 'Sair'].map((text, index) => {
+          ['Tela Inicial', 'Estoque', 'Usuários', 'Perfis de Usuário', 'Relatórios', 'Sair'].map((text, index) => {
             const routes = {
               "Tela Inicial": "home",
               "Estoque": "stock",
               "Usuários": "users",
+              "Perfis de Usuário": "userProfiles",
               "Relatórios": "reports",
               "Sair": "logoff"
             };
@@ -93,6 +95,9 @@ export const Menu = (props) => {
                   )}
                   {text === "Usuários" && (
                     <ListItemIcon><SupervisorAccountIcon /></ListItemIcon>
+                  )}
+                  {text === "Perfis de Usuário" && (
+                    <ListItemIcon><PermIdentityIcon /></ListItemIcon>
                   )}
                   {text === "Relatórios" && (
                     <ListItemIcon><TimelineIcon /></ListItemIcon>

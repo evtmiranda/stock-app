@@ -11,12 +11,12 @@ export class User extends Component {
     }
 
     async loadUsers() {
-        const filters = '';
+        const filters = 'deleted_at=null';
 
         const users = await userService.get(filters);
 
         const usersDataTable = users.map(user => ({
-            id: user._id,
+            id: user.id,
             name: user.name,
             createdAt: formatDate(user.createdAt)
         }));
