@@ -6,7 +6,7 @@ import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import { Menu } from '../../components'
-import { profileService } from '../../services'
+import { profileService, webGatewayService } from '../../services'
 import formatDate from '../../utils/formatDate'
 
 export class UserProfile extends Component {
@@ -14,6 +14,7 @@ export class UserProfile extends Component {
         super(props)
         this.state = {
             profilesDataTable: [],
+            permissions: [],
             redirectToAddUser: false
         }
     }
@@ -30,8 +31,12 @@ export class UserProfile extends Component {
         }
     }
 
-    async componentDidMount() {
-        await this.loadProfiles();
+    async loadPermissions() {
+        const permissions = await webGatewayService.getPermissions();
+
+        this.setState({
+            permissions: permissions
+        });
     }
 
     async loadProfiles() {
@@ -46,7 +51,14 @@ export class UserProfile extends Component {
             createdAt: formatDate(profile.createdAt)
         }));
 
-        this.setState({ profilesDataTable: profilesDataTable });
+        this.setState({
+            profilesDataTable: profilesDataTable
+        });
+    }
+
+    async componentDidMount() {
+        await this.loadProfiles();
+        await this.loadPermissions();
     }
 
     render() {
@@ -80,7 +92,10 @@ export class UserProfile extends Component {
                         Action: props => {
                             if (props.action.icon === 'add') {
                                 return (
-                                    <Create action={props.action} />
+                                    <Create
+                                        action={props.action}
+                                        permissions={this.state.permissions}
+                                    />
                                 )
                             }
                             else {
@@ -94,7 +109,6 @@ export class UserProfile extends Component {
                                     </Tooltip>
                                 )
                             }
-
                         }
                     }}
                     localization={{

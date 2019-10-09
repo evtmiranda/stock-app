@@ -1,6 +1,6 @@
-import React from 'react';
+/* eslint-disable react/prop-types */
+import React from 'react'
 import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
@@ -15,7 +15,7 @@ import Box from '@material-ui/core/Box';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 
-export default function Create(action) {
+export default function Create(props) {
   const [open, setOpen] = React.useState(false);
   const [maxWidth] = React.useState('sm');
   const fullWidth = true;
@@ -30,26 +30,24 @@ export default function Create(action) {
 
   return (
     <React.Fragment>
-      <Tooltip title={action.action.tooltip}>
-        <IconButton
-          aria-label={action.action.icon}
+      <Tooltip title={props.action.tooltip}>
+        <Button
           size="small"
           tooltip="teste"
+          color="primary"
+          variant="contained"
           onClick={handleClickOpen}
         >
-          <Button variant="contained" color="primary" >
-            Adicionar
+          Adicionar
           </Button>
-        </IconButton>
       </Tooltip>
-
       <Dialog
         open={open}
         fullWidth={fullWidth}
         maxWidth={maxWidth}
         onClose={handleClose}
         aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title">{action.action.tooltip}</DialogTitle>
+        <DialogTitle id="form-dialog-title">{props.action.tooltip}</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
@@ -69,79 +67,52 @@ export default function Create(action) {
           <FormControl component="fieldset">
             <FormGroup row style={{ marginTop: 20, marginBottom: 30 }}>
               <Typography component="div">
-                <Box fontWeight="1500" m={0}>
+                <Box fontWeight="fontWeightMedium" m={0}>
                   Permissões
-                </Box>
+                  </Box>
               </Typography>
             </FormGroup>
-            <FormGroup row style={{ marginTop: 10 }}>
-              <Typography component="div">
-                <Box fontWeight="fontWeightMedium" m={0}>
-                  Tela Inicial
-                </Box>
-              </Typography>
-            </FormGroup>
-            <FormGroup>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    color="primary"
-                  />
-                }
-                label="Visualizar"
-              />
-            </FormGroup>
-            <Divider variant="fullWidth" />
-            <FormGroup row style={{ marginTop: 10 }}>
-              <Typography component="div">
-                <Box fontWeight="fontWeightMedium" m={0}>
-                  Estoque
-                </Box>
-              </Typography>
-            </FormGroup>
-            <FormGroup>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    color="primary"
-                  />
-                }
-                label="Visualizar"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    color="primary"
-                  />
-                }
-                label="Editar"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    color="primary"
-                  />
-                }
-                label="Excluir"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    color="primary"
-                  />
-                }
-                label="Adicionar"
-              />
-            </FormGroup>
+            {props.permissions.map((p, i, a) => {
+              return (
+                <React.Fragment key={p.moduleName}>
+                  <FormGroup row style={{ marginTop: 10 }}>
+                    <Typography component="div">
+                      <Box fontWeight="fontWeightRegular" m={0}>
+                        {p.moduleName}
+                      </Box>
+                    </Typography>
+                  </FormGroup>
+                  {p.permissions.map(x => {
+                    return (
+                      <React.Fragment key={x}>
+                        <FormGroup style={{ marginLeft: 5 }}>
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                color="primary"
+                              />
+                            }
+                            label={x}
+                          />
+                        </FormGroup>
+                      </React.Fragment>
+                    )
+                  })}
+                  {!(a.length - 1 === i) && (
+                    <Divider variant="fullWidth" />
+                  )}
+                </React.Fragment>
+              )
+            })}
           </FormControl>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
             Sair
-          </Button>
+            </Button>
           <Button onClick={handleClose} color="primary">
             Adicionar
-          </Button>
+            </Button>
         </DialogActions>
       </Dialog>
     </React.Fragment>
