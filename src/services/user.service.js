@@ -1,4 +1,3 @@
-// import config from 'config';
 import { authHeader } from '../helpers';
 import { api } from '../services'
 import { isUndefined } from 'util';
@@ -6,11 +5,12 @@ import { isUndefined } from 'util';
 export const userService = {
     authenticate,
     logout,
-    get
+    get,
+    remove
 };
 
 async function authenticate(username, password) {
-    const response = await api.get(`v1/users?deleted=false&username=${username}`)
+    const response = await api.get(`v1/users?username=${username}`)
     const user = response.data[0];
 
     if (!isUndefined(user) && user.password === password) {
@@ -24,7 +24,6 @@ async function authenticate(username, password) {
 }
 
 function logout() {
-    // remove user from local storage to log user out
     localStorage.removeItem('user');
 }
 
@@ -40,29 +39,14 @@ async function get(filters) {
     return users;
 }
 
-// function get() {
-//     const requestOptions = {
-//         method: 'GET',
-//         headers: authHeader()
-//     };
+async function remove(id) {
+    const config = {
+        headers: authHeader()
+    };
 
-//     return fetch(`${config.apiUrl}/users`, requestOptions).then(handleResponse);
-// }
+    const response = await api.delete(`v1/users/${id}`, config)
 
-// function handleResponse(response) {
-//     return response.text().then(text => {
-//         const data = text && JSON.parse(text);
-//         if (!response.ok) {
-//             if (response.status === 401) {
-//                 // auto logout if 401 response returned from api
-//                 logout();
-//                 location.reload(true);
-//             }
+    const rowsDeleted = response.data;
 
-//             const error = (data && data.message) || response.statusText;
-//             return Promise.reject(error);
-//         }
-
-//         return data;
-//     });
-// }
+    return rowsDeleted;
+}

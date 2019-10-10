@@ -15,6 +15,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import HomeIcon from '@material-ui/icons/Home';
 import SupervisorAccountIcon from '@material-ui/icons/SupervisorAccount';
+import PermIdentityIcon from '@material-ui/icons/PermIdentity';
 import TimelineIcon from '@material-ui/icons/Timeline';
 import CloseIcon from '@material-ui/icons/Close';
 import StoreIcon from '@material-ui/icons/Store';
@@ -70,42 +71,48 @@ export const Menu = (props) => {
       <Divider />
       <List>
         {
-          ['Tela Inicial', 'Estoque', 'Usuários', 'Relatórios', 'Sair'].map((text, index) => {
+          ['Tela Inicial', 'Estoque', 'Usuários', 'Perfis de Usuário', 'Relatórios', 'Sair'].map((text) => {
             const routes = {
               "Tela Inicial": "home",
               "Estoque": "stock",
               "Usuários": "users",
+              "Perfis de Usuário": "userProfiles",
               "Relatórios": "reports",
               "Sair": "logoff"
             };
 
             return (
-              <Link to={routes[text]} className={classes.link}>
-                <ListItem
-                  button
-                  key={text}
-                >
-                  {text === "Tela Inicial" && (
-                    <ListItemIcon><HomeIcon /></ListItemIcon>
-                  )}
-                  {text === "Estoque" && (
-                    <ListItemIcon><StoreIcon /></ListItemIcon>
-                  )}
-                  {text === "Usuários" && (
-                    <ListItemIcon><SupervisorAccountIcon /></ListItemIcon>
-                  )}
-                  {text === "Relatórios" && (
-                    <ListItemIcon><TimelineIcon /></ListItemIcon>
-                  )}
-                  {text === "Sair" && (
-                    <ListItemIcon><CloseIcon /></ListItemIcon>
-                  )}
-                  <ListItemText primary={text} />
-                </ListItem>
-              </Link>
+              <React.Fragment key={routes[text]}>
+                <Link to={routes[text]} className={classes.link}>
+                  <ListItem
+                    button
+                  >
+                    {text === "Tela Inicial" && (
+                      <ListItemIcon><HomeIcon /></ListItemIcon>
+                    )}
+                    {text === "Estoque" && (
+                      <ListItemIcon><StoreIcon /></ListItemIcon>
+                    )}
+                    {text === "Usuários" && (
+                      <ListItemIcon><SupervisorAccountIcon /></ListItemIcon>
+                    )}
+                    {text === "Perfis de Usuário" && (
+                      <ListItemIcon><PermIdentityIcon /></ListItemIcon>
+                    )}
+                    {text === "Relatórios" && (
+                      <ListItemIcon><TimelineIcon /></ListItemIcon>
+                    )}
+                    {text === "Sair" && (
+                      <ListItemIcon><CloseIcon /></ListItemIcon>
+                    )}
+                    <ListItemText primary={text} />
+                  </ListItem>
+                </Link>
+              </React.Fragment>
             );
           })}
       </List>
+
     </div>
   )
 

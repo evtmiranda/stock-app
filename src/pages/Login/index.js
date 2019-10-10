@@ -53,7 +53,7 @@ export class Login extends Component {
                             return errors
                         }}
                         initialValues={{}}
-                        render={({ handleSubmit, form, submitting, pristine, values }) => (
+                        render={({ handleSubmit }) => (
                             <form
                                 onSubmit={handleSubmit}>
                                 <Grid container spacing={3}>
