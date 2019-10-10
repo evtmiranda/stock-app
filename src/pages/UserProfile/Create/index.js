@@ -1,6 +1,6 @@
-import React from 'react';
+/* eslint-disable react/prop-types */
+import React from 'react'
 import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
@@ -9,14 +9,25 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Divider from '@material-ui/core/Divider';
 import FormControl from '@material-ui/core/FormControl';
+import FormHelperText from '@material-ui/core/FormHelperText';
 import FormGroup from '@material-ui/core/FormGroup';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
+import { profileService } from '../../../services'
 
-export default function Create(action) {
+export default function Create(props) {
   const [open, setOpen] = React.useState(false);
+
+  const [permissionsSelected, setPermissionSelected] = React.useState([])
+
+  const [textFieldName, setTextFieldName] = React.useState('')
+  const [textFieldNameError, setTextFieldNameError] = React.useState('')
+
+  const [textFieldDescription, setTextFieldDescription] = React.useState('')
+  const [textFieldDescriptionError, setTextFieldDescriptionError] = React.useState('')
+
   const [maxWidth] = React.useState('sm');
   const fullWidth = true;
 
@@ -28,120 +39,158 @@ export default function Create(action) {
     setOpen(false);
   };
 
+  const createProfile = async () => {
+    validateForm()
+
+    const profile = {
+      name: textFieldName,
+      description: textFieldDescription,
+      permissions: permissionsSelected
+    }
+
+    await profileService.create(profile);
+
+    // eslint-disable-next-line no-undef
+    window.location.reload();
+  }
+
+  const validateForm = () => {
+    const requiredMessage = "este campo é obrigatório";
+
+    textFieldName ? setTextFieldNameError('') : setTextFieldNameError(requiredMessage)
+    textFieldDescription ? setTextFieldDescriptionError('') : setTextFieldDescriptionError(requiredMessage)
+  }
+
+  const handleChange = event => {
+    if (event.target.checked) {
+      if (!permissionsSelected.includes(event.target.value)) {
+        setPermissionSelected([...permissionsSelected, event.target.value]);
+      }
+    }
+    else {
+      setPermissionSelected(
+        permissionsSelected.filter(value => {
+          return value !== event.target.value;
+        }));
+    }
+  };
+
+  const moduleStyle = {
+    marginTop: 15,
+    display: 'block'
+  };
+
+  const permissionStyle = {
+    display: 'block',
+    marginLeft: 10
+  };
+
+  const formControlStyle = {
+    marginTop: 30
+  };
+
+  const formGroupStyle = {
+    marginBottom: 15
+  };
+
   return (
     <React.Fragment>
-      <Tooltip title={action.action.tooltip}>
-        <IconButton
-          aria-label={action.action.icon}
+      <Tooltip title={props.action.tooltip}>
+        <Button
           size="small"
           tooltip="teste"
+          color="primary"
+          variant="contained"
           onClick={handleClickOpen}
         >
-          <Button variant="contained" color="primary" >
-            Adicionar
+          Adicionar
           </Button>
-        </IconButton>
       </Tooltip>
-
       <Dialog
         open={open}
         fullWidth={fullWidth}
         maxWidth={maxWidth}
         onClose={handleClose}
         aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title">{action.action.tooltip}</DialogTitle>
+        <DialogTitle id="form-dialog-title">{props.action.tooltip}</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
-            margin="dense"
+            value={textFieldName}
+            margin="normal"
+            variant="outlined"
             id="name"
             label="Nome"
             type="text"
+            error={textFieldNameError ? true : false}
             fullWidth
+            required
+            onChange={event => setTextFieldName(event.target.value)}
           />
+          {textFieldNameError && (<FormHelperText error>{textFieldNameError}</FormHelperText>)}
           <TextField
-            margin="dense"
+            value={textFieldDescription}
+            margin="normal"
+            variant="outlined"
             id="description"
             label="Descrição"
             type="text"
+            error={textFieldDescriptionError ? true : false}
             fullWidth
+            required
+            onChange={event => setTextFieldDescription(event.target.value)}
           />
-          <FormControl component="fieldset">
-            <FormGroup row style={{ marginTop: 20, marginBottom: 30 }}>
-              <Typography component="div">
-                <Box fontWeight="1500" m={0}>
+          {textFieldDescriptionError && (<FormHelperText error>{textFieldDescriptionError}</FormHelperText>)}
+          <FormControl component="fieldset" style={formControlStyle}>
+            <FormGroup onChange={handleChange}>
+              <Typography component="div" style={formGroupStyle}>
+                <Box fontWeight="fontWeightMedium" m={0}>
                   Permissões
-                </Box>
+                  </Box>
               </Typography>
-            </FormGroup>
-            <FormGroup row style={{ marginTop: 10 }}>
-              <Typography component="div">
-                <Box fontWeight="fontWeightMedium" m={0}>
-                  Tela Inicial
-                </Box>
-              </Typography>
-            </FormGroup>
-            <FormGroup>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    color="primary"
-                  />
-                }
-                label="Visualizar"
-              />
-            </FormGroup>
-            <Divider variant="fullWidth" />
-            <FormGroup row style={{ marginTop: 10 }}>
-              <Typography component="div">
-                <Box fontWeight="fontWeightMedium" m={0}>
-                  Estoque
-                </Box>
-              </Typography>
-            </FormGroup>
-            <FormGroup>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    color="primary"
-                  />
-                }
-                label="Visualizar"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    color="primary"
-                  />
-                }
-                label="Editar"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    color="primary"
-                  />
-                }
-                label="Excluir"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    color="primary"
-                  />
-                }
-                label="Adicionar"
-              />
+              {props.permissions.map((p, i, a) => {
+                return (
+                  <React.Fragment key={p.moduleName}>
+                    <div style={moduleStyle}>
+                      <Typography component="div">
+                        <Box fontWeight="fontWeightRegular" m={0}>
+                          {p.moduleName}
+                        </Box>
+                      </Typography>
+                      {p.permissions.map(x => {
+                        return (
+                          <React.Fragment key={x}>
+                            <div style={permissionStyle}>
+                              <FormControlLabel
+                                value={p.moduleName + "|" + x}
+                                control={
+                                  <Checkbox
+                                    color="primary"
+                                  />
+                                }
+                                label={x}
+                              />
+                            </div>
+                          </React.Fragment>
+                        )
+                      })}
+                      {!(a.length - 1 === i) && (
+                        <Divider variant="fullWidth" />
+                      )}
+                    </div>
+                  </React.Fragment>
+                )
+              })}
             </FormGroup>
           </FormControl>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
             Sair
-          </Button>
-          <Button onClick={handleClose} color="primary">
+            </Button>
+          <Button onClick={createProfile} color="primary">
             Adicionar
-          </Button>
+            </Button>
         </DialogActions>
       </Dialog>
     </React.Fragment>

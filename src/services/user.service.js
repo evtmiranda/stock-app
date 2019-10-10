@@ -14,7 +14,9 @@ async function authenticate(username, password) {
     const user = response.data[0];
 
     if (!isUndefined(user) && user.password === password) {
+        // eslint-disable-next-line no-undef
         user.authdata = window.btoa(username + ':' + password);
+        // eslint-disable-next-line no-undef
         localStorage.setItem('user', JSON.stringify(user));
 
         return true;
@@ -24,6 +26,7 @@ async function authenticate(username, password) {
 }
 
 function logout() {
+    // eslint-disable-next-line no-undef
     localStorage.removeItem('user');
 }
 
