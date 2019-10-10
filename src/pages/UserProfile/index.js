@@ -56,6 +56,15 @@ export class UserProfile extends Component {
         });
     }
 
+    async delete(rowData) {
+        const { id } = rowData;
+
+        await profileService.remove(id);
+
+        // eslint-disable-next-line no-undef
+        window.location.reload();
+    }
+
     async componentDidMount() {
         await this.loadProfiles();
         await this.loadPermissions();
@@ -85,7 +94,8 @@ export class UserProfile extends Component {
                         },
                         {
                             icon: 'delete',
-                            tooltip: 'Excluir perfil'
+                            tooltip: 'Excluir perfil',
+                            onClick: (event, rowData) => this.delete(rowData)
                         }
                     ]}
                     components={{
@@ -102,7 +112,7 @@ export class UserProfile extends Component {
                                 return (
                                     <Tooltip title={props.action.tooltip}>
                                         <IconButton aria-label={props.action.icon} size="small"
-                                            onClick={props.action.onClick}
+                                            onClick={(event) => props.action.onClick(event, props.data)}
                                         >
                                             <Icon>{props.action.icon}</Icon>
                                         </IconButton>

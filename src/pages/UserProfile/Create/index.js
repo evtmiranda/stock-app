@@ -15,9 +15,11 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
+import { profileService } from '../../../services'
 
 export default function Create(props) {
   const [open, setOpen] = React.useState(false);
+
   const [permissionsSelected, setPermissionSelected] = React.useState([])
 
   const [textFieldName, setTextFieldName] = React.useState('')
@@ -37,8 +39,19 @@ export default function Create(props) {
     setOpen(false);
   };
 
-  const createProfile = () => {
+  const createProfile = async () => {
     validateForm()
+
+    const profile = {
+      name: textFieldName,
+      description: textFieldDescription,
+      permissions: permissionsSelected
+    }
+
+    await profileService.create(profile);
+
+    // eslint-disable-next-line no-undef
+    window.location.reload();
   }
 
   const validateForm = () => {
@@ -104,7 +117,8 @@ export default function Create(props) {
           <TextField
             autoFocus
             value={textFieldName}
-            margin="dense"
+            margin="normal"
+            variant="outlined"
             id="name"
             label="Nome"
             type="text"
@@ -116,7 +130,8 @@ export default function Create(props) {
           {textFieldNameError && (<FormHelperText error>{textFieldNameError}</FormHelperText>)}
           <TextField
             value={textFieldDescription}
-            margin="dense"
+            margin="normal"
+            variant="outlined"
             id="description"
             label="Descrição"
             type="text"
