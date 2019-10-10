@@ -7,10 +7,28 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Icon from '@material-ui/core/Icon';
 import './styles.css'
 import { userService } from '../../services'
+import { Redirect } from 'react-router-dom'
+import Create from './Create'
 
 export class User extends Component {
-    state = {
-        usersDataTable: []
+    constructor(props) {
+        super(props)
+        this.state = {
+            profilesDataTable: [],
+            redirectToAddUser: false
+        }
+    }
+
+    setRedirectToAddUser = () => {
+        this.setState({
+            redirectToAddUser: true
+        })
+    }
+
+    renderRedirect = () => {
+        if (this.state.redirectToAddUser) {
+            return <Redirect to='/home' />
+        }
     }
 
     async loadUsers() {
@@ -51,10 +69,20 @@ export class User extends Component {
                         icon: 'delete',
                         tooltip: 'Apagar usuário',
                         onClick: (event, rowData) => this.delete(rowData)
+                    },
+                    {
+                        icon: 'add',
+                        tooltip: 'Adicionar Usuário',
+                        isFreeAction: true,
                     }
                 ]}
                 components={{
                     Action: props => {
+                        if (props.action.icon === 'add') {
+                            return (
+                                <Create action={props.action} />
+                            )
+                        }
                         return (
                             <Tooltip title={props.action.tooltip}>
                                 <IconButton aria-label={props.action.icon} size="small"
