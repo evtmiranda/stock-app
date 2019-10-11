@@ -1,8 +1,11 @@
-import React from 'react';
+/* eslint-disable no-undef */
+/* eslint-disable react/prop-types */
+import React from 'react'
 import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
-import TextField from '@material-ui/core/TextField';
+import { TextField } from 'final-form-material-ui';
+import Grid from '@material-ui/core/Grid';
+import { Form, Field } from 'react-final-form'
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -11,12 +14,14 @@ import Divider from '@material-ui/core/Divider';
 import FormControl from '@material-ui/core/FormControl';
 import FormGroup from '@material-ui/core/FormGroup';
 import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
+import { profileService } from '../../../services'
 
-export default function Create(action) {
+export default function Create(props) {
   const [open, setOpen] = React.useState(false);
+  const [permissionsSelected, setPermissionSelected] = React.useState([])
+
   const [maxWidth] = React.useState('sm');
   const fullWidth = true;
 
@@ -28,122 +33,178 @@ export default function Create(action) {
     setOpen(false);
   };
 
-  return (
-    <React.Fragment>
-      <Tooltip title={action.action.tooltip}>
-        <IconButton
-          aria-label={action.action.icon}
-          size="small"
-          tooltip="teste"
-          onClick={handleClickOpen}
-        >
-          <Button variant="contained" color="primary" >
-            Adicionar
-          </Button>
-        </IconButton>
-      </Tooltip>
+  const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
-      <Dialog
-        open={open}
-        fullWidth={fullWidth}
-        maxWidth={maxWidth}
-        onClose={handleClose}
-        aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title">{action.action.tooltip}</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="name"
-            label="Nome"
-            type="text"
-            fullWidth
-          />
-          <TextField
-            margin="dense"
-            id="description"
-            label="Descrição"
-            type="text"
-            fullWidth
-          />
-          <FormControl component="fieldset">
-            <FormGroup row style={{ marginTop: 20, marginBottom: 30 }}>
-              <Typography component="div">
-                <Box fontWeight="1500" m={0}>
-                  Permissões
-                </Box>
-              </Typography>
-            </FormGroup>
-            <FormGroup row style={{ marginTop: 10 }}>
-              <Typography component="div">
-                <Box fontWeight="fontWeightMedium" m={0}>
-                  Tela Inicial
-                </Box>
-              </Typography>
-            </FormGroup>
-            <FormGroup>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    color="primary"
-                  />
-                }
-                label="Visualizar"
-              />
-            </FormGroup>
-            <Divider variant="fullWidth" />
-            <FormGroup row style={{ marginTop: 10 }}>
-              <Typography component="div">
-                <Box fontWeight="fontWeightMedium" m={0}>
-                  Estoque
-                </Box>
-              </Typography>
-            </FormGroup>
-            <FormGroup>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    color="primary"
-                  />
-                }
-                label="Visualizar"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    color="primary"
-                  />
-                }
-                label="Editar"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    color="primary"
-                  />
-                }
-                label="Excluir"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    color="primary"
-                  />
-                }
-                label="Adicionar"
-              />
-            </FormGroup>
-          </FormControl>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Sair
-          </Button>
-          <Button onClick={handleClose} color="primary">
+  const onSubmit = async values => {
+    await sleep(300)
+
+    const { name, description } = values;
+
+    const profile = {
+      name,
+      description,
+      permissions: permissionsSelected
+    }
+
+    await profileService.create(profile);
+
+    window.location.reload();
+  }
+
+  const handleChange = event => {
+    if (event.target.checked) {
+      if (!permissionsSelected.includes(event.target.value)) {
+        setPermissionSelected([...permissionsSelected, event.target.value]);
+      }
+    }
+    else {
+      setPermissionSelected(
+        permissionsSelected.filter(value => {
+          return value !== event.target.value;
+        }));
+    }
+  };
+
+  const styles = {
+    moduleStyle: {
+      marginTop: 15,
+      display: 'block'
+    },
+    permissionStyle: {
+      display: 'block',
+      marginLeft: 10
+    },
+    formControlStyle: {
+      marginTop: 30
+    },
+    formGroupStyle: {
+      marginBottom: 15
+    },
+    titleFormStyle: {
+      marginBottom: 15
+    },
+    checkbox: {
+      fontSize: 5
+    }
+  }
+
+  return (
+    <div id="main-login">
+      <React.Fragment>
+        <Tooltip title={props.action.tooltip}>
+          <Button
+            size="small"
+            tooltip="teste"
+            color="primary"
+            variant="contained"
+            onClick={handleClickOpen}
+          >
             Adicionar
           </Button>
-        </DialogActions>
-      </Dialog>
-    </React.Fragment>
+        </Tooltip>
+        <Dialog
+          open={open}
+          fullWidth={fullWidth}
+          maxWidth={maxWidth}
+          onClose={handleClose}
+          aria-labelledby="form-dialog-title">
+          <DialogTitle id="form-dialog-title">{props.action.tooltip}</DialogTitle>
+          <DialogContent>
+            <Form
+              onSubmit={onSubmit}
+              validate={values => {
+                const errors = {}
+                if (!values.name) {
+                  errors.name = "Este campo é obrigatório"
+                }
+                if (!values.description) {
+                  errors.description = "Este campo é obrigatório"
+                }
+                return errors
+              }}
+              initialValues={{}}
+              render={({ handleSubmit }) => (
+                <form
+                  onSubmit={handleSubmit}>
+                  <div style={{ minWidth: 100 }}>
+                    <Grid container spacing={3} style={{ minWidth: 100 }}>
+                      <Grid item xs={12}>
+                        <Field
+                          fullWidth
+                          name="name"
+                          label="Nome"
+                          component={TextField}
+                          type="text"
+                          autoComplete="off"
+                          variant="outlined"
+                        />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <Field
+                          fullWidth
+                          name="description"
+                          label="Descrição"
+                          component={TextField}
+                          type="text"
+                          autoComplete="off"
+                          variant="outlined"
+                        />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <FormControl component="fieldset" style={styles.formControlStyle}>
+                          <FormGroup onChange={handleChange}>
+                            <Typography variant="h6" gutterBottom style={styles.titleFormStyle}>
+                              Permissões
+                            </Typography>
+                            {props.permissions.map((p, i, a) => {
+                              return (
+                                <React.Fragment key={p.moduleName}>
+                                  <div style={styles.moduleStyle}>
+                                    <Typography variant="subtitle1" gutterBottom>
+                                      {p.moduleName}
+                                    </Typography>
+                                    {p.permissions.map(x => {
+                                      return (
+                                        <React.Fragment key={x}>
+                                          <div style={styles.permissionStyle}>
+                                            <FormControlLabel
+                                              value={p.moduleName + "|" + x}
+                                              control={
+                                                <Checkbox
+                                                  color="primary"
+                                                />
+                                              }
+                                              label={x}
+                                            />
+                                          </div>
+                                        </React.Fragment>
+                                      )
+                                    })}
+                                    {!(a.length - 1 === i) && (
+                                      <Divider variant="fullWidth" />
+                                    )}
+                                  </div>
+                                </React.Fragment>
+                              )
+                            })}
+                          </FormGroup>
+                        </FormControl>
+                        <DialogActions>
+                          <Button onClick={handleClose} color="primary">
+                            Sair
+                        </Button>
+                          <Button variant="contained" color="primary" type="submit">
+                            Adicionar
+                      </Button>
+                        </DialogActions>
+                      </Grid>
+                    </Grid>
+                  </div>
+                </form>
+              )} />
+          </DialogContent>
+        </Dialog>
+      </React.Fragment>
+    </div>
   );
 }

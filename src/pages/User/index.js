@@ -53,6 +53,9 @@ export class User extends Component {
         const { id } = rowData;
 
         await userService.remove(id);
+
+        // eslint-disable-next-line no-undef
+        window.location.reload();
     }
 
     render() {
@@ -86,7 +89,7 @@ export class User extends Component {
                         return (
                             <Tooltip title={props.action.tooltip}>
                                 <IconButton aria-label={props.action.icon} size="small"
-                                    onClick={props.action.onClick}
+                                    onClick={(event) => props.action.onClick(event, props.data)}
                                 >
                                     <Icon>{props.action.icon}</Icon>
                                 </IconButton>
