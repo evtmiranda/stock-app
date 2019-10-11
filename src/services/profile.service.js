@@ -37,8 +37,21 @@ async function remove(id) {
     return rowsDeleted;
 }
 
+async function update(profile) {
+    const config = {
+        headers: authHeader()
+    };
+
+    const response = await api.put(`v1/profiles/${profile.id}`, profile, config)
+
+    const rowsUpdated = response.data;
+
+    return rowsUpdated;
+}
+
 export const profileService = {
     get,
     create,
-    remove
+    remove,
+    update
 };

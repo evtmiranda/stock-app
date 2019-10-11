@@ -3,33 +3,26 @@
 import React from 'react'
 import Button from '@material-ui/core/Button';
 import Tooltip from '@material-ui/core/Tooltip';
-import TextField from '@material-ui/core/TextField';
+import { TextField } from 'final-form-material-ui';
+import Grid from '@material-ui/core/Grid';
+import { Form, Field } from 'react-final-form'
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
+import Icon from '@material-ui/core/Icon';
+import IconButton from '@material-ui/core/IconButton';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Divider from '@material-ui/core/Divider';
 import FormControl from '@material-ui/core/FormControl';
-import Icon from '@material-ui/core/Icon';
-import IconButton from '@material-ui/core/IconButton';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import FormGroup from '@material-ui/core/FormGroup';
 import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import { profileService } from '../../../services'
 
 export default function Edit(props) {
     const [open, setOpen] = React.useState(false);
-
-    const [permissionsSelected, setPermissionSelected] = React.useState([])
-
-    const [textFieldName, setTextFieldName] = React.useState('')
-    const [textFieldNameError, setTextFieldNameError] = React.useState('')
-
-    const [textFieldDescription, setTextFieldDescription] = React.useState('')
-    const [textFieldDescriptionError, setTextFieldDescriptionError] = React.useState('')
+    const [permissionsSelected, setPermissionSelected] = React.useState(props.profile.permissions)
 
     const [maxWidth] = React.useState('sm');
     const fullWidth = true;
@@ -42,25 +35,23 @@ export default function Edit(props) {
         setOpen(false);
     };
 
-    const createProfile = async () => {
-        validateForm()
+    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
+
+    const onSubmit = async values => {
+        await sleep(300)
+
+        const { id, name, description } = values;
 
         const profile = {
-            name: textFieldName,
-            description: textFieldDescription,
+            id,
+            name,
+            description,
             permissions: permissionsSelected
         }
 
-        await profileService.create(profile);
+        await profileService.update(profile);
 
         window.location.reload();
-    }
-
-    const validateForm = () => {
-        const requiredMessage = "este campo é obrigatório";
-
-        textFieldName ? setTextFieldNameError('') : setTextFieldNameError(requiredMessage)
-        textFieldDescription ? setTextFieldDescriptionError('') : setTextFieldDescriptionError(requiredMessage)
     }
 
     const handleChange = event => {
@@ -73,126 +64,165 @@ export default function Edit(props) {
             setPermissionSelected(
                 permissionsSelected.filter(value => {
                     return value !== event.target.value;
-                }));
+                })
+            );
         }
     };
 
-    const moduleStyle = {
-        marginTop: 15,
-        display: 'block'
-    };
-
-    const permissionStyle = {
-        display: 'block',
-        marginLeft: 10
-    };
-
-    const formControlStyle = {
-        marginTop: 30
-    };
-
-    const formGroupStyle = {
-        marginBottom: 15
-    };
+    const styles = {
+        moduleStyle: {
+            marginTop: 15,
+            display: 'block'
+        },
+        permissionStyle: {
+            display: 'block',
+            marginLeft: 10
+        },
+        formControlStyle: {
+            marginTop: 30
+        },
+        formGroupStyle: {
+            marginBottom: 15
+        },
+        titleFormStyle: {
+            marginBottom: 15
+        },
+        checkbox: {
+            fontSize: 5
+        }
+    }
 
     return (
-        <React.Fragment>
-            <Tooltip title={props.action.tooltip}>
-                <IconButton 
-                    aria-label={props.action.icon} 
-                    size="small"
-                    onClick={handleClickOpen}
-                >
-                    <Icon>{props.action.icon}</Icon>
-                </IconButton>
-            </Tooltip>
-            <Dialog
-                open={open}
-                fullWidth={fullWidth}
-                maxWidth={maxWidth}
-                onClose={handleClose}
-                aria-labelledby="form-dialog-title">
-                <DialogTitle id="form-dialog-title">{props.action.tooltip}</DialogTitle>
-                <DialogContent>
-                    <TextField
-                        autoFocus
-                        value={textFieldName}
-                        margin="normal"
-                        variant="outlined"
-                        id="name"
-                        label="Nome"
-                        type="text"
-                        error={textFieldNameError ? true : false}
-                        fullWidth
-                        required
-                        onChange={event => setTextFieldName(event.target.value)}
-                    />
-                    {textFieldNameError && (<FormHelperText error>{textFieldNameError}</FormHelperText>)}
-                    <TextField
-                        value={textFieldDescription}
-                        margin="normal"
-                        variant="outlined"
-                        id="description"
-                        label="Descrição"
-                        type="text"
-                        error={textFieldDescriptionError ? true : false}
-                        fullWidth
-                        required
-                        onChange={event => setTextFieldDescription(event.target.value)}
-                    />
-                    {textFieldDescriptionError && (<FormHelperText error>{textFieldDescriptionError}</FormHelperText>)}
-                    <FormControl component="fieldset" style={formControlStyle}>
-                        <FormGroup onChange={handleChange}>
-                            <Typography component="div" style={formGroupStyle}>
-                                <Box fontWeight="fontWeightMedium" m={0}>
-                                    Permissões
-                  </Box>
-                            </Typography>
-                            {props.permissions.map((p, i, a) => {
-                                return (
-                                    <React.Fragment key={p.moduleName}>
-                                        <div style={moduleStyle}>
-                                            <Typography component="div">
-                                                <Box fontWeight="fontWeightRegular" m={0}>
-                                                    {p.moduleName}
-                                                </Box>
-                                            </Typography>
-                                            {p.permissions.map(x => {
-                                                return (
-                                                    <React.Fragment key={x}>
-                                                        <div style={permissionStyle}>
-                                                            <FormControlLabel
-                                                                value={p.moduleName + "|" + x}
-                                                                control={
-                                                                    <Checkbox
-                                                                        color="primary"
-                                                                    />
-                                                                }
-                                                                label={x}
-                                                            />
-                                                        </div>
-                                                    </React.Fragment>
-                                                )
-                                            })}
-                                            {!(a.length - 1 === i) && (
-                                                <Divider variant="fullWidth" />
-                                            )}
-                                        </div>
-                                    </React.Fragment>
-                                )
-                            })}
-                        </FormGroup>
-                    </FormControl>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose} color="primary">
-                        Sair
-            </Button>
-                    <Button onClick={createProfile} color="primary">
-                        Adicionar
-            </Button>
-                </DialogActions>
-            </Dialog>
-        </React.Fragment>
+        <div id="main-login">
+            <React.Fragment>
+                <Tooltip title={props.action.tooltip}>
+                    <IconButton
+                        aria-label={props.action.icon}
+                        size="small"
+                        onClick={handleClickOpen}
+                    >
+                        <Icon>{props.action.icon}</Icon>
+                    </IconButton>
+                </Tooltip>
+                <Dialog
+                    open={open}
+                    fullWidth={fullWidth}
+                    maxWidth={maxWidth}
+                    onClose={handleClose}
+                    aria-labelledby="form-dialog-title">
+                    <DialogTitle id="form-dialog-title">{props.action.tooltip}</DialogTitle>
+                    <DialogContent>
+                        <Form
+                            onSubmit={onSubmit}
+                            validate={values => {
+                                const errors = {}
+                                if (!values.name) {
+                                    errors.name = "Este campo é obrigatório"
+                                }
+                                if (!values.description) {
+                                    errors.description = "Este campo é obrigatório"
+                                }
+                                return errors
+                            }}
+                            initialValues={{}}
+                            render={({ handleSubmit }) => (
+                                <form
+                                    onSubmit={handleSubmit}>
+                                    <div style={{ minWidth: 100 }}>
+                                        <Grid container spacing={3} style={{ minWidth: 100 }}>
+                                            <Grid item xs={12}>
+                                                <Field
+                                                    fullWidth
+                                                    name="id"
+                                                    initialValue={props.profile.id}
+                                                    label="Id"
+                                                    disabled
+                                                    component={TextField}
+                                                    type="text"
+                                                    autoComplete="off"
+                                                    variant="outlined"
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12}>
+                                                <Field
+                                                    fullWidth
+                                                    name="name"
+                                                    initialValue={props.profile.name}
+                                                    label="Nome"
+                                                    component={TextField}
+                                                    type="text"
+                                                    autoComplete="off"
+                                                    variant="outlined"
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12}>
+                                                <Field
+                                                    fullWidth
+                                                    name="description"
+                                                    initialValue={props.profile.description}
+                                                    label="Descrição"
+                                                    component={TextField}
+                                                    type="text"
+                                                    autoComplete="off"
+                                                    variant="outlined"
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12}>
+                                                <FormControl component="fieldset" style={styles.formControlStyle}>
+                                                    <FormGroup onChange={handleChange}>
+                                                        <Typography variant="h6" gutterBottom style={styles.titleFormStyle}>
+                                                            Permissões
+                                                        </Typography>
+                                                        {props.permissions.map((p, i, a) => {
+                                                            return (
+                                                                <React.Fragment key={p.moduleName}>
+                                                                    <div style={styles.moduleStyle}>
+                                                                        <Typography variant="subtitle1" gutterBottom>
+                                                                            {p.moduleName}
+                                                                        </Typography>
+                                                                        {p.permissions.map(x => {
+                                                                            return (
+                                                                                <React.Fragment key={x}>
+                                                                                    <div style={styles.permissionStyle}>
+                                                                                        <FormControlLabel
+                                                                                            value={p.moduleName + "|" + x}
+                                                                                            control={
+                                                                                                <Checkbox
+                                                                                                    color="primary"
+                                                                                                    checked={permissionsSelected.includes(p.moduleName + "|" + x)}
+                                                                                                />
+                                                                                            }
+                                                                                            label={x}
+                                                                                        />
+                                                                                    </div>
+                                                                                </React.Fragment>
+                                                                            )
+                                                                        })}
+                                                                        {!(a.length - 1 === i) && (
+                                                                            <Divider variant="fullWidth" />
+                                                                        )}
+                                                                    </div>
+                                                                </React.Fragment>
+                                                            )
+                                                        })}
+                                                    </FormGroup>
+                                                </FormControl>
+                                                <DialogActions>
+                                                    <Button onClick={handleClose} color="primary">
+                                                        Sair
+                                                    </Button>
+                                                    <Button variant="contained" color="primary" type="submit">
+                                                        Salvar
+                                                    </Button>
+                                                </DialogActions>
+                                            </Grid>
+                                        </Grid>
+                                    </div>
+                                </form>
+                            )} />
+                    </DialogContent>
+                </Dialog>
+            </React.Fragment>
+        </div>
     );
 }
