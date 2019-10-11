@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import React, { Component } from 'react'
 import { Menu } from '../../components'
 import formatDate from '../../utils/formatDate'
@@ -5,8 +6,9 @@ import MaterialTable from "material-table";
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import Icon from '@material-ui/core/Icon';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import './styles.css'
-import { userService } from '../../services'
+import { userService, profileService } from '../../services'
 import { Redirect } from 'react-router-dom'
 import Create from './Create'
 
@@ -15,7 +17,9 @@ export class User extends Component {
         super(props)
         this.state = {
             profilesDataTable: [],
-            redirectToAddUser: false
+            profiles: [],
+            redirectToAddUser: false,
+            loaded: false
         }
     }
 
@@ -45,8 +49,19 @@ export class User extends Component {
         this.setState({ usersDataTable: usersDataTable });
     }
 
+    async loadProfiles() {
+        const filters = 'deleted_at=null';
+
+        const profiles = await profileService.get(filters);
+
+        this.setState({ profiles: profiles });
+    }
+
     async componentDidMount() {
         await this.loadUsers();
+        await this.loadProfiles();
+
+        this.setState({ loaded: true })
     }
 
     async delete(rowData) {
@@ -54,75 +69,85 @@ export class User extends Component {
 
         await userService.remove(id);
 
-        // eslint-disable-next-line no-undef
         window.location.reload();
     }
 
     render() {
-        const body = (
-            <MaterialTable
-                title="Usuários"
-                columns={[
-                    { title: "Nome", field: "name" },
-                    { title: "Criado em", field: "createdAt" }
-                ]}
-                data={this.state.usersDataTable}
-                actions={[
-                    {
-                        icon: 'delete',
-                        tooltip: 'Excluir usuário',
-                        onClick: (event, rowData) => this.delete(rowData)
-                    },
-                    {
-                        icon: 'add',
-                        tooltip: 'Adicionar Usuário',
-                        isFreeAction: true,
-                    }
-                ]}
-                components={{
-                    Action: props => {
-                        if (props.action.icon === 'add') {
+        let body = (
+            <div style={{ textAlign: "center" }}>
+                <CircularProgress />
+            </div>
+        )
+
+        if (this.state.loaded) {
+            body = (
+                <MaterialTable
+                    title="Usuários"
+                    columns={[
+                        { title: "Nome", field: "name" },
+                        { title: "Criado em", field: "createdAt" }
+                    ]}
+                    data={this.state.usersDataTable}
+                    actions={[
+                        {
+                            icon: 'delete',
+                            tooltip: 'Excluir usuário',
+                            onClick: (event, rowData) => this.delete(rowData)
+                        },
+                        {
+                            icon: 'add',
+                            tooltip: 'Adicionar Usuário',
+                            isFreeAction: true,
+                        }
+                    ]}
+                    components={{
+                        Action: props => {
+                            if (props.action.icon === 'add') {
+                                return (
+                                    <Create
+                                        action={props.action}
+                                        profiles={this.state.profiles}
+                                    />
+                                )
+                            }
                             return (
-                                <Create action={props.action} />
+                                <Tooltip title={props.action.tooltip}>
+                                    <IconButton aria-label={props.action.icon} size="small"
+                                        onClick={(event) => props.action.onClick(event, props.data)}
+                                    >
+                                        <Icon>{props.action.icon}</Icon>
+                                    </IconButton>
+                                </Tooltip>
                             )
                         }
-                        return (
-                            <Tooltip title={props.action.tooltip}>
-                                <IconButton aria-label={props.action.icon} size="small"
-                                    onClick={(event) => props.action.onClick(event, props.data)}
-                                >
-                                    <Icon>{props.action.icon}</Icon>
-                                </IconButton>
-                            </Tooltip>
-                        )
-                    }
 
-                }}
-                options={{
-                    actionsColumnIndex: -1,
-                    search: false
-                }}
-                localization={{
-                    pagination: {
-                        labelDisplayedRows: '{from}-{to} de {count}',
-                        labelRowsSelect: 'linhas'
-                    },
-                    toolbar: {
-                        nRowsSelected: '{0} linha(s) selecionadas',
+                    }}
+                    options={{
+                        actionsColumnIndex: -1,
+                        search: false
+                    }}
+                    localization={{
+                        pagination: {
+                            labelDisplayedRows: '{from}-{to} de {count}',
+                            labelRowsSelect: 'linhas'
+                        },
+                        toolbar: {
+                            nRowsSelected: '{0} linha(s) selecionadas',
 
-                    },
-                    header: {
-                        actions: 'Ações'
-                    },
-                    body: {
-                        emptyDataSourceMessage: 'Sem informações',
-                        filterRow: {
-                            filterTooltip: 'Filter'
+                        },
+                        header: {
+                            actions: 'Ações'
+                        },
+                        body: {
+                            emptyDataSourceMessage: 'Sem informações',
+                            filterRow: {
+                                filterTooltip: 'Filter'
+                            }
                         }
-                    }
-                }}
-            />
-        )
+                    }}
+                />
+            )
+        }
 
         return (
             <React.Fragment>

@@ -142,7 +142,6 @@ export class UserProfile extends Component {
                                 }
                                 else if (props.action.icon === 'edit') {
                                     const profile = this.getProfile(props.data.id);
-                                    console.log(profile)
                                     return (
                                         <Edit
                                             action={props.action}
