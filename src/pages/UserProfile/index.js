@@ -1,6 +1,8 @@
+/* eslint-disable no-undef */
 import React, { Component } from 'react'
 import { Redirect } from 'react-router-dom'
 import Create from './Create'
+import Edit from './Edit'
 import MaterialTable from "material-table";
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
@@ -61,8 +63,17 @@ export class UserProfile extends Component {
 
         await profileService.remove(id);
 
-        // eslint-disable-next-line no-undef
         window.location.reload();
+    }
+
+    async getProfile(id) {
+        const filters = {
+            id
+        }
+
+        const profile = await profileService.get(filters);
+
+        return profile;
     }
 
     async componentDidMount() {
@@ -90,12 +101,16 @@ export class UserProfile extends Component {
                         {
                             icon: 'add',
                             tooltip: 'Adicionar perfil',
-                            isFreeAction: true,
+                            isFreeAction: true
+                        },
+                        {
+                            icon: 'edit',
+                            tooltip: 'Editar perfil'
                         },
                         {
                             icon: 'delete',
                             tooltip: 'Excluir perfil',
-                            onClick: (event, rowData) => this.delete(rowData)
+                            onClick: (_event, rowData) => this.delete(rowData)
                         }
                     ]}
                     components={{
@@ -105,6 +120,15 @@ export class UserProfile extends Component {
                                     <Create
                                         action={props.action}
                                         permissions={this.state.permissions}
+                                    />
+                                )
+                            }
+                            else if (props.action.icon === 'edit') {
+                                return (
+                                    <Edit
+                                        action={props.action}
+                                        permissions={this.state.permissions}
+                                        profile={async () => await this.getProfile(props.data.id)}
                                     />
                                 )
                             }
