@@ -13,6 +13,7 @@ export class Login extends Component {
     }
 
     render() {
+        // eslint-disable-next-line no-undef
         const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
         const onSubmit = async values => {
@@ -23,6 +24,7 @@ export class Login extends Component {
             const authenticated = await userService.authenticate(username, password)
 
             if (authenticated) {
+                // eslint-disable-next-line react/prop-types
                 this.props.history.push("home");
             } else {
                 this.setState({
