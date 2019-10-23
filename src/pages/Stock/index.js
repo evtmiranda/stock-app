@@ -1,98 +1,76 @@
 import React, { Component } from 'react'
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Table from "../../components/Table";
 import { Menu } from '../../components'
+import { stockService } from '../../services'
+import formatDate from '../../utils/formatDate'
 import './styles.css'
 
 export class Stock extends Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            itemsStock: [],
+            loaded: false
+        }
+    }
+
+    async loadStock() {
+        const filters = 'deleted_at=null';
+
+        let itemsStock = await stockService.get(filters);
+
+        itemsStock = itemsStock.map(i => ({
+            ...i,
+            "entry.date": formatDate(i.entry.date),
+            "output.date": formatDate(i.output.date),
+            createdAt: formatDate(i.createdAt),
+        }));
+
+        this.setState({ itemsStock: itemsStock });
+    }
+
+    async componentDidMount() {
+        await this.loadStock();
+
+        this.setState({ loaded: true })
+    }
+
     render() {
-        const body = (
-            <h1>Estoque</h1>
+        let body = (
+            <div style={{ textAlign: "center" }}>
+                <CircularProgress />
+            </div>
         )
-        
+
+        if (this.state.loaded) {
+            body = (
+                <Table
+                    title="Estoque"
+                    columns={[
+                        { title: "Lote", field: "lot" },
+                        { title: "Descrição", field: "description" },
+                        { title: "Referência", field: "reference" },
+                        { title: "Quantidade", field: "quantity" },
+                        { title: "Data de entrada", field: "entry.date" },
+                        { title: "Etiqueta", field: "tag" },
+                        { title: "Loja", field: "store" },
+                        { title: "Unitário", field: "unitValue" },
+                        { title: "Quantidade de Saída", field: "output.quantity" },
+                        { title: "Data de Saída", field: "output.date" },
+                        { title: "Criado Em", field: "createdAt" }
+                    ]}
+                    data={this.state.itemsStock}
+                />
+            )
+        }
+
         return (
             <React.Fragment>
-                <Menu body={body} />
+                <Menu
+                    body={body}
+                />
             </React.Fragment>
         )
     }
 }
-
-// import React, { Component } from 'react'
-// import { Menu } from '../../components'
-// import './styles.css'
-
-// export class Stock extends Component {
-//     render() {
-//         const body = (
-//             <h1>Estoque</h1>
-//         )
-
-//         return (
-//             <React.Fragment>
-//                 <Menu body={body} />
-//             </React.Fragment>
-//         )
-//     }
-// }
-
-// import React from 'react';
-// import { makeStyles } from '@material-ui/core/styles';
-// import Table from '@material-ui/core/Table';
-// import TableBody from '@material-ui/core/TableBody';
-// import TableCell from '@material-ui/core/TableCell';
-// import TableHead from '@material-ui/core/TableHead';
-// import TableRow from '@material-ui/core/TableRow';
-// import Paper from '@material-ui/core/Paper';
-
-// const useStyles = makeStyles(theme => ({
-//   root: {
-//     width: '100%',
-//     marginTop: theme.spacing(3),
-//     overflowX: 'auto',
-//   },
-//   table: {
-//     minWidth: 650,
-//   },
-// }));
-
-// function createData(name, calories, fat, carbs, protein) {
-//   return { name, calories, fat, carbs, protein };
-// }
-
-// const rows = [
-//   createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-//   createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-//   createData('Eclair', 262, 16.0, 24, 6.0),
-//   createData('Cupcake', 305, 3.7, 67, 4.3),
-//   createData('Gingerbread', 356, 16.0, 49, 3.9),
-// ];
-
-// export default function SimpleTable() {
-//   const classes = useStyles();
-
-//   return (
-//     <Paper className={classes.root}>
-//       <Table className={classes.table}>
-//         <TableHead>
-//           <TableRow>
-//             <TableCell>Cliente </TableCell>
-//             <TableCell align="right">Lote</TableCell>
-//             <TableCell align="right">Quantidade</TableCell>
-//             <TableCell align="right">Status</TableCell>
-//           </TableRow>
-//         </TableHead>
-//         <TableBody>
-//           {rows.map(row => (
-//             <TableRow key={row.name}>
-//               <TableCell component="th" scope="row">
-//                 {row.name}
-//               </TableCell>
-//               <TableCell align="right">{row.calories}</TableCell>
-//               <TableCell align="right">{row.fat}</TableCell>
-//               <TableCell align="right">{row.carbs}</TableCell>
-//             </TableRow>
-//           ))}
-//         </TableBody>
-//       </Table>
-//     </Paper>
-//   );
-// }
