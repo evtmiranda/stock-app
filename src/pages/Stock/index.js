@@ -1,6 +1,10 @@
+/* eslint-disable no-undef */
 import React, { Component } from 'react'
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Table from "../../components/Table";
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
+import Icon from '@material-ui/core/Icon';
 import { Menu } from '../../components'
 import { stockService } from '../../services'
 import formatDate from '../../utils/formatDate'
@@ -28,6 +32,14 @@ export class Stock extends Component {
         }));
 
         this.setState({ itemsStock: itemsStock });
+    }
+
+    async delete(rowData) {
+        const { id } = rowData;
+
+        await stockService.remove(id);
+
+        window.location.reload();
     }
 
     async componentDidMount() {
@@ -61,6 +73,29 @@ export class Stock extends Component {
                         { title: "Criado Em", field: "createdAt" }
                     ]}
                     data={this.state.itemsStock}
+                    actions={[
+                        {
+                            icon: 'delete',
+                            tooltip: 'Excluir item',
+                            onClick: (_event, rowData) => this.delete(rowData)
+                        },
+                    ]}
+                    components={{
+                        Action: props => {
+                            return (
+                                <Tooltip title={props.action.tooltip}>
+                                    <IconButton aria-label={props.action.icon} size="small"
+                                        onClick={(event) => props.action.onClick(event, props.data)}
+                                    >
+                                        <Icon>{props.action.icon}</Icon>
+                                    </IconButton>
+                                </Tooltip>
+                            )
+                        }
+                    }}
+                    options={{
+                        actionsColumnIndex: -1
+                    }}
                 />
             )
         }
