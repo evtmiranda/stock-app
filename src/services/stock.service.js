@@ -25,7 +25,20 @@ async function remove(id) {
     return rowsDeleted;
 }
 
+async function create(stockItem) {
+    const config = {
+        headers: authHeader()
+    };
+
+    const response = await api.post(`v1/stocks`, stockItem, config)
+
+    const createdStockItem = response.data;
+
+    return createdStockItem;
+}
+
 export const stockService = {
     get,
-    remove
+    remove,
+    create
 };

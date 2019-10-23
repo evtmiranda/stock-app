@@ -8,7 +8,9 @@ import Icon from '@material-ui/core/Icon';
 import { Menu } from '../../components'
 import { stockService } from '../../services'
 import formatDate from '../../utils/formatDate'
+import Create from './Create'
 import './styles.css'
+import { isNullOrUndefined } from 'util';
 
 export class Stock extends Component {
     constructor(props) {
@@ -27,7 +29,7 @@ export class Stock extends Component {
         itemsStock = itemsStock.map(i => ({
             ...i,
             "entry.date": formatDate(i.entry.date),
-            "output.date": formatDate(i.output.date),
+            "output.date": isNullOrUndefined(i.output.date) ? "" : formatDate(i.output.date),
             createdAt: formatDate(i.createdAt),
         }));
 
@@ -75,6 +77,11 @@ export class Stock extends Component {
                     data={this.state.itemsStock}
                     actions={[
                         {
+                            icon: 'add',
+                            tooltip: 'Adicionar item',
+                            isFreeAction: true
+                        },
+                        {
                             icon: 'delete',
                             tooltip: 'Excluir item',
                             onClick: (_event, rowData) => this.delete(rowData)
@@ -82,6 +89,13 @@ export class Stock extends Component {
                     ]}
                     components={{
                         Action: props => {
+                            if (props.action.icon === 'add') {
+                                return (
+                                    <Create
+                                        action={props.action}
+                                    />
+                                )
+                            }
                             return (
                                 <Tooltip title={props.action.tooltip}>
                                     <IconButton aria-label={props.action.icon} size="small"
