@@ -41,8 +41,7 @@ export class User extends Component {
         const users = await userService.get(filters);
 
         const usersDataTable = users.map(user => ({
-            id: user.id,
-            name: user.name,
+            ...user,
             createdAt: formatDate(user.createdAt)
         }));
 
