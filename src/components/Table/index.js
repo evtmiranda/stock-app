@@ -8,11 +8,12 @@ export default class Table extends Component {
         columns: PropTypes.array,
         data: PropTypes.object,
         actions: PropTypes.array,
-        options: PropTypes.object
+        options: PropTypes.object,
+        components: PropTypes.object
     }
 
     render() {
-        const { title, columns, data, actions, options } = this.props;
+        const { title, columns, data, actions, options, components } = this.props;
         return (
             <MaterialTable
                 title={title}
@@ -20,6 +21,7 @@ export default class Table extends Component {
                 data={data}
                 actions={actions}
                 options={options}
+                components={components}
                 localization={{
                     pagination: {
                         labelDisplayedRows: '{from}-{to} de {count}',
