@@ -1,22 +1,14 @@
+/* eslint-disable no-undef */
 import { authHeader } from '../helpers';
 import { api } from '../services'
 import { isUndefined } from 'util';
-
-export const userService = {
-    authenticate,
-    logout,
-    get,
-    remove
-};
 
 async function authenticate(username, password) {
     const response = await api.get(`v1/users?username=${username}`)
     const user = response.data[0];
 
     if (!isUndefined(user) && user.password === password) {
-        // eslint-disable-next-line no-undef
         user.authdata = window.btoa(username + ':' + password);
-        // eslint-disable-next-line no-undef
         localStorage.setItem('user', JSON.stringify(user));
 
         return true;
@@ -26,7 +18,6 @@ async function authenticate(username, password) {
 }
 
 function logout() {
-    // eslint-disable-next-line no-undef
     localStorage.removeItem('user');
 }
 
@@ -53,3 +44,23 @@ async function remove(id) {
 
     return rowsDeleted;
 }
+
+async function create(user) {
+    const config = {
+        headers: authHeader()
+    };
+
+    const response = await api.post(`v1/users`, user, config)
+
+    const result = response.data;
+
+    return result;
+}
+
+export const userService = {
+    authenticate,
+    logout,
+    get,
+    remove,
+    create
+};
