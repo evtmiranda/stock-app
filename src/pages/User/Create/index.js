@@ -15,6 +15,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
+import { userService } from '../../../services';
 
 const useStyles = makeStyles(theme => ({
   button: {
@@ -61,10 +62,18 @@ export default function Create(props) {
   const onSubmit = async values => {
     await sleep(300)
 
-    console.log(values)
-    console.log(profile)
+    const { name, username, password } = values;
 
-    // window.location.reload();
+    const user = {
+      name,
+      username,
+      password,
+      profileId: profile
+    }
+
+    await userService.create(user);
+
+    window.location.reload();
   }
 
   return (
@@ -160,7 +169,6 @@ export default function Create(props) {
                           id: 'controlled-open-select',
                         }}
                       >
-                        {console.log(props.profiles)}
                         {props.profiles.map(p => (
                           <MenuItem key={p.id} value={p.id}>{p.name}</MenuItem>
                         ))}
