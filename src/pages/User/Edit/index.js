@@ -12,13 +12,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import Divider from '@material-ui/core/Divider';
 import FormControl from '@material-ui/core/FormControl';
-import FormGroup from '@material-ui/core/FormGroup';
-import Typography from '@material-ui/core/Typography';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import { profileService } from '../../../services';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
@@ -26,20 +20,19 @@ import { makeStyles } from '@material-ui/core/styles'
 
 const useStyles = makeStyles(theme => ({
     button: {
-      display: 'block',
-      marginTop: theme.spacing(2),
+        display: 'block',
+        marginTop: theme.spacing(2),
     },
     formControl: {
-      margin: theme.spacing(1),
-      width: 400,
+        margin: theme.spacing(1),
+        width: 400,
     },
-  }));
+}));
 
 export default function Edit(props) {
     const [open, setOpen] = React.useState(false);
     const classes = useStyles();
     const [selectOpen, setSelectOpen] = React.useState(false);
-    const [profile, setProfile] = React.useState('');
 
     const [maxWidth] = React.useState('sm');
     const fullWidth = true;
@@ -85,14 +78,14 @@ export default function Edit(props) {
             );
         }
     };
-    
-      const handleSelectOpen = () => {
+
+    const handleSelectOpen = () => {
         setSelectOpen(true);
-      };
-    
-      const handleSelectClose = () => {
+    };
+
+    const handleSelectClose = () => {
         setSelectOpen(false);
-      };
+    };
 
     return (
         <div id="main-login">

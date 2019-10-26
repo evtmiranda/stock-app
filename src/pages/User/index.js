@@ -6,19 +6,12 @@ import MaterialTable from "material-table";
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import Icon from '@material-ui/core/Icon';
-<<<<<<< HEAD
 import CircularProgress from '@material-ui/core/CircularProgress';
 import './styles.css'
 import { userService, profileService } from '../../services'
 import { Redirect } from 'react-router-dom'
 import Create from './Create'
-=======
-import './styles.css';
-import { userService, profileService } from '../../services';
-import { Redirect } from 'react-router-dom';
-import Create from './Create';
-import Edit from '../../pages/User/Edit'
->>>>>>> create function edit user
+import Edit from './Edit'
 
 export class User extends Component {
     constructor(props) {
@@ -108,7 +101,6 @@ export class User extends Component {
     }
 
     render() {
-<<<<<<< HEAD
         let body = (
             <div style={{ textAlign: "center" }}>
                 <CircularProgress />
@@ -134,6 +126,10 @@ export class User extends Component {
                             icon: 'add',
                             tooltip: 'Adicionar Usuário',
                             isFreeAction: true,
+                        },
+                        {
+                            icon: 'edit',
+                            tooltip: 'Editar perfil'
                         }
                     ]}
                     components={{
@@ -146,35 +142,17 @@ export class User extends Component {
                                     />
                                 )
                             }
-=======
-        const body = (
-            <MaterialTable
-                title="Usuários"
-                columns={[
-                    { title: "Nome", field: "name" },
-                    { title: "Criado em", field: "createdAt" }
-                ]}
-                data={this.state.usersDataTable}
-                actions={[
-                    {
-                        icon: 'edit',
-                        tooltip: 'Editar perfil'
-                    },
-                    {
-                        icon: 'delete',
-                        tooltip: 'Excluir usuário',
-                        onClick: (event, rowData) => this.delete(rowData)
-                    },
-                    {
-                        icon: 'add',
-                        tooltip: 'Adicionar Usuário',
-                        isFreeAction: true,
-                    }
-                ]}
-                components={{
-                    Action: props => {
-                        if (props.action.icon === 'add') {
->>>>>>> create function edit user
+                            else if (props.action.icon === 'edit') {
+                                const user = this.getUser(props.data.id);
+                                const profile = this.getProfile(user.profileId);
+                                return (
+                                    <Edit
+                                        action={props.action}
+                                        user={user}
+                                        profile={profile}
+                                    />
+                                )
+                            }
                             return (
                                 <Tooltip title={props.action.tooltip}>
                                     <IconButton aria-label={props.action.icon} size="small"
@@ -185,7 +163,6 @@ export class User extends Component {
                                 </Tooltip>
                             )
                         }
-<<<<<<< HEAD
 
                     }}
                     options={{
@@ -209,53 +186,6 @@ export class User extends Component {
                             filterRow: {
                                 filterTooltip: 'Filter'
                             }
-=======
-                        else if (props.action.icon === 'edit') {
-                            const user = this.getUser(props.data.id);
-                            const profile = this.getProfile(user.profileId);
-                            console.log(profile);
-                            console.log(user);
-                            return (
-                                <Edit
-                                    action={props.action}
-                                    user={user}
-                                    profile={profile}
-                                />
-                            )
-                        }
-                        return (
-                            <Tooltip title={props.action.tooltip}>
-                                <IconButton aria-label={props.action.icon} size="small"
-                                    onClick={(event) => props.action.onClick(event, props.data)}
-                                >
-                                    <Icon>{props.action.icon}</Icon>
-                                </IconButton>
-                            </Tooltip>
-                        )
-                    }
-
-                }}
-                options={{
-                    actionsColumnIndex: -1,
-                    search: false
-                }}
-                localization={{
-                    pagination: {
-                        labelDisplayedRows: '{from}-{to} de {count}',
-                        labelRowsSelect: 'linhas'
-                    },
-                    toolbar: {
-                        nRowsSelected: '{0} linha(s) selecionadas',
-
-                    },
-                    header: {
-                        actions: 'Ações'
-                    },
-                    body: {
-                        emptyDataSourceMessage: 'Sem informações',
-                        filterRow: {
-                            filterTooltip: 'Filter'
->>>>>>> create function edit user
                         }
                     }}
                 />
