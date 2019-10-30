@@ -12,15 +12,16 @@ import { userService, profileService } from '../../services'
 import { Redirect } from 'react-router-dom'
 import Create from './Create'
 import Edit from './Edit'
+import { isNullOrUndefined } from 'util';
 
 export class User extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            profilesDataTable: [],
+            users: [],
             profiles: [],
             redirectToAddUser: false,
-            loaded: false
+            loaded: false,
         }
     }
 
@@ -36,26 +37,26 @@ export class User extends Component {
         }
     }
 
-    getUser(id) {
-        const filters = `id=${id}`;
+    async loadProfiles() {
+        const filters = 'deleted_at=null';
 
-        let user = {};
+        const profiles = await profileService.get(filters);
 
-        userService.get(filters).then(p => {
-            user = p[0];
+        this.setState({
+            profiles: profiles
         });
-        return user;
+    }
+
+    getUser(id) {
+        const user = this.state.users.filter(p => p.id === id);
+
+        return user.length > 0 ? user[0] : user;
     }
 
     getProfile(profileId) {
-        const filters = `id=${profileId}`;
+        const profile = this.state.profiles.filter(p => p.id === profileId);
 
-        let profile = {};
-
-        profileService.get(filters).then(p => {
-            profile = p[0];
-        });
-        return profile;
+        return profile.length > 0 ? profile[0] : profile;
     }
 
     async loadUsers() {
@@ -63,20 +64,12 @@ export class User extends Component {
 
         const users = await userService.get(filters);
 
-        const usersDataTable = users.map(user => ({
+        const usersMap = users.map(user => ({
             ...user,
             createdAt: formatDate(user.createdAt)
         }));
 
-        this.setState({ usersDataTable: usersDataTable });
-    }
-
-    async loadProfiles() {
-        const filters = 'deleted_at=null';
-
-        const profiles = await profileService.get(filters);
-
-        this.setState({ profiles: profiles });
+        this.setState({ users: usersMap });
     }
 
     async componentDidMount() {
@@ -115,21 +108,21 @@ export class User extends Component {
                         { title: "Nome", field: "name" },
                         { title: "Criado em", field: "createdAt" }
                     ]}
-                    data={this.state.usersDataTable}
+                    data={this.state.users}
                     actions={[
                         {
-                            icon: 'delete',
-                            tooltip: 'Excluir usuário',
-                            onClick: (event, rowData) => this.delete(rowData)
-                        },
-                        {
                             icon: 'add',
-                            tooltip: 'Adicionar Usuário',
+                            tooltip: 'Adicionar usuário',
                             isFreeAction: true,
                         },
                         {
                             icon: 'edit',
-                            tooltip: 'Editar perfil'
+                            tooltip: 'Editar usuário'
+                        },
+                        {
+                            icon: 'delete',
+                            tooltip: 'Excluir usuário',
+                            onClick: (event, rowData) => this.delete(rowData)
                         }
                     ]}
                     components={{
@@ -142,26 +135,30 @@ export class User extends Component {
                                     />
                                 )
                             }
-                            else if (props.action.icon === 'edit') {
-                                const user = this.getUser(props.data.id);
+                            else if (props.action.icon === 'edit' && !isNullOrUndefined(props.data.id)) {
+                                const user = this.getUser(props.data.id)
                                 const profile = this.getProfile(user.profileId);
+
                                 return (
                                     <Edit
                                         action={props.action}
                                         user={user}
                                         profile={profile}
+                                        profiles={this.state.profiles}
                                     />
                                 )
                             }
-                            return (
-                                <Tooltip title={props.action.tooltip}>
-                                    <IconButton aria-label={props.action.icon} size="small"
-                                        onClick={(event) => props.action.onClick(event, props.data)}
-                                    >
-                                        <Icon>{props.action.icon}</Icon>
-                                    </IconButton>
-                                </Tooltip>
-                            )
+                            else {
+                                return (
+                                    <Tooltip title={props.action.tooltip}>
+                                        <IconButton aria-label={props.action.icon} size="small"
+                                            onClick={(event) => props.action.onClick(event, props.data)}
+                                        >
+                                            <Icon>{props.action.icon}</Icon>
+                                        </IconButton>
+                                    </Tooltip>
+                                )
+                            }
                         }
 
                     }}

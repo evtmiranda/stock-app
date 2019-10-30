@@ -57,10 +57,23 @@ async function create(user) {
     return result;
 }
 
+async function update(user) {
+    const config = {
+        headers: authHeader()
+    };
+
+    const response = await api.put(`v1/users/${user.id}`, user, config)
+
+    const rowsUpdated = response.data;
+
+    return rowsUpdated;
+}
+
 export const userService = {
     authenticate,
     logout,
     get,
     remove,
-    create
+    create,
+    update
 };
