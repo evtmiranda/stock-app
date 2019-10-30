@@ -17,6 +17,8 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles'
+import { isNumber } from 'util';
+import { userService } from '../../../services';
 
 const useStyles = makeStyles(theme => ({
     button: {
@@ -31,6 +33,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function Edit(props) {
     const [open, setOpen] = React.useState(false);
+    const [profile, setProfile] = React.useState('');
     const classes = useStyles();
     const [selectOpen, setSelectOpen] = React.useState(false);
 
@@ -43,6 +46,7 @@ export default function Edit(props) {
 
     const handleClose = () => {
         setOpen(false);
+        setProfile();
     };
 
     const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
@@ -50,33 +54,23 @@ export default function Edit(props) {
     const onSubmit = async values => {
         await sleep(300)
 
-        const { id, name, description } = values;
+        const { name, username, password } = values;
 
-        const profile = {
-            id,
+        const user = {
+            id: props.user.id,
             name,
-            description,
-            permissions: permissionsSelected
+            username,
+            password,
+            profileId: getProfileId()
         }
 
-        await profileService.update(profile);
+        await userService.update(user);
 
         window.location.reload();
     }
 
     const handleChange = event => {
-        if (event.target.checked) {
-            if (!permissionsSelected.includes(event.target.value)) {
-                setPermissionSelected([...permissionsSelected, event.target.value]);
-            }
-        }
-        else {
-            setPermissionSelected(
-                permissionsSelected.filter(value => {
-                    return value !== event.target.value;
-                })
-            );
-        }
+        setProfile(event.target.value);
     };
 
     const handleSelectOpen = () => {
@@ -86,6 +80,10 @@ export default function Edit(props) {
     const handleSelectClose = () => {
         setSelectOpen(false);
     };
+
+    const getProfileId = () => {
+        return isNumber(profile) ? profile : props.profile.id;
+    }
 
     return (
         <div id="main-login">
@@ -114,9 +112,6 @@ export default function Edit(props) {
                                 if (!values.name) {
                                     errors.name = "Este campo é obrigatório"
                                 }
-                                if (!values.description) {
-                                    errors.description = "Este campo é obrigatório"
-                                }
                                 return errors
                             }}
                             initialValues={{}}
@@ -128,10 +123,9 @@ export default function Edit(props) {
                                             <Grid item xs={12}>
                                                 <Field
                                                     fullWidth
-                                                    name="id"
-                                                    label="Id"
-                                                    initialValue={props.user.id}
-                                                    disabled
+                                                    name="name"
+                                                    defaultValue={props.user.name}
+                                                    label="Nome"
                                                     component={TextField}
                                                     type="text"
                                                     autoComplete="off"
@@ -141,39 +135,48 @@ export default function Edit(props) {
                                             <Grid item xs={12}>
                                                 <Field
                                                     fullWidth
-                                                    name="name"
-                                                    initialValue={props.user.name}
-                                                    label="Nome"
+                                                    name="username"
+                                                    defaultValue={props.user.username}
+                                                    label="Login"
                                                     component={TextField}
                                                     type="text"
                                                     autoComplete="off"
                                                     variant="outlined"
                                                 />
                                             </Grid>
-                                            <form autoComplete="off">
-                                                <Button className={classes.button} onClick={handleSelectOpen}>
-                                                    Perfil do Usuário
-              </Button>
-                                                <FormControl className={classes.formControl}>
-                                                    <InputLabel htmlFor="controlled-open-select">Perfil</InputLabel>
-                                                    <Select
-                                                        selectOpen={selectOpen}
-                                                        onClose={handleSelectClose}
-                                                        onOpen={handleSelectOpen}
-                                                        value={profile}
-                                                        onChange={handleChange}
-                                                        inputProps={{
-                                                            name: 'profile',
-                                                            id: 'controlled-open-select',
-                                                        }}
-                                                    >
-                                                        <MenuItem value="">
-                                                            <em>None</em>
-                                                        </MenuItem>
-                                                        <MenuItem value={10}>Admin</MenuItem>
-                                                    </Select>
-                                                </FormControl>
-                                            </form>
+                                            <Grid item xs={12}>
+                                                <Field
+                                                    fullWidth
+                                                    name="password"
+                                                    defaultValue={props.user.password}
+                                                    label="Senha"
+                                                    component={TextField}
+                                                    type="password"
+                                                    autoComplete="off"
+                                                    variant="outlined"
+                                                />
+                                            </Grid>
+                                            <Button className={classes.button} onClick={handleSelectOpen}>
+                                                Perfil do Usuário
+                                                </Button>
+                                            <FormControl className={classes.formControl}>
+                                                <InputLabel htmlFor="controlled-open-select">Perfil</InputLabel>
+                                                <Select
+                                                    selectOpen={selectOpen}
+                                                    onClose={handleSelectClose}
+                                                    onOpen={handleSelectOpen}
+                                                    value={getProfileId()}
+                                                    onChange={handleChange}
+                                                    inputProps={{
+                                                        name: 'profile',
+                                                        id: 'controlled-open-select',
+                                                    }}
+                                                >
+                                                    {props.profiles.map(p => (
+                                                        <MenuItem key={p.id} value={p.id}>{p.name}</MenuItem>
+                                                    ))}
+                                                </Select>
+                                            </FormControl>
                                             <Grid item xs={12}>
                                                 <DialogActions>
                                                     <Button onClick={handleClose} color="primary">
