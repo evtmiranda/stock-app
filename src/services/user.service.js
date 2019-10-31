@@ -2,14 +2,24 @@
 import { authHeader } from '../helpers';
 import { api } from '../services'
 import { isUndefined } from 'util';
+import { moduleService, permissionService } from './index'
+import { storage } from '../utils'
 
 async function authenticate(username, password) {
     const response = await api.get(`v1/users?username=${username}`)
     const user = response.data[0];
 
-    if (!isUndefined(user) && user.password === password) {
+    if (!isUndefined(user) && user.password === password && user.profile) {
         user.authdata = window.btoa(username + ':' + password);
         localStorage.setItem('user', JSON.stringify(user));
+
+        const filters = 'deleted_at=null';
+
+        const permissions = await permissionService.get(filters);
+        localStorage.setItem('permissions', JSON.stringify(permissions));
+
+        const modules = await moduleService.get(filters);
+        localStorage.setItem('modules', JSON.stringify(modules));
 
         return true;
     }
@@ -19,6 +29,16 @@ async function authenticate(username, password) {
 
 function logout() {
     localStorage.removeItem('user');
+}
+
+function userHasPermission(moduleId, permissionId) {
+    const user = storage.get('user')
+
+    if (user.profile.permissions.filter(p => p.moduleId === moduleId && p.permissionId === permissionId).length > 0) {
+        return true
+    }
+
+    return false
 }
 
 async function get(filters) {
@@ -75,5 +95,6 @@ export const userService = {
     get,
     remove,
     create,
-    update
+    update,
+    userHasPermission
 };
