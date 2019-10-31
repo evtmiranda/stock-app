@@ -1,6 +1,7 @@
+import { getAuthenticatedUser } from '../utils'
+
 export function authHeader() {
-    // return authorization header with basic auth credentials
-    let user = JSON.parse(localStorage.getItem('user'));
+    const user = getAuthenticatedUser()
 
     if (user && user.authdata) {
         return { 'Authorization': 'Basic ' + user.authdata };
