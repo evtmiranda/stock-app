@@ -1,7 +1,7 @@
-import { getAuthenticatedUser } from '../utils'
+import { storage } from '../utils'
 
 export function authHeader() {
-    const user = getAuthenticatedUser()
+    const user = storage.get('user')
 
     if (user && user.authdata) {
         return { 'Authorization': 'Basic ' + user.authdata };

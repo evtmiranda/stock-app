@@ -1,2 +1,3 @@
 export { default as formatDate } from './formatDate'
-export { default as getAuthenticatedUser } from './getAuthenticatedUser'
+export * from './storage';
+export { default as makeActions } from './makeActions'

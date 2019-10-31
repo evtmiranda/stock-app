@@ -2,7 +2,7 @@
 import React, { Component } from 'react'
 import { Menu } from '../../components'
 import formatDate from '../../utils/formatDate'
-import MaterialTable from "material-table";
+import Table from "../../components/Table";
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import Icon from '@material-ui/core/Icon';
@@ -13,6 +13,7 @@ import { Redirect } from 'react-router-dom'
 import Create from './Create'
 import Edit from './Edit'
 import { isNullOrUndefined } from 'util';
+import { makeActions } from '../../utils';
 
 export class User extends Component {
     constructor(props) {
@@ -102,29 +103,29 @@ export class User extends Component {
 
         if (this.state.loaded) {
             body = (
-                <MaterialTable
+                <Table
                     title="Usuários"
                     columns={[
                         { title: "Nome", field: "name" },
                         { title: "Criado em", field: "createdAt" }
                     ]}
                     data={this.state.users}
-                    actions={[
-                        {
+                    actions={makeActions('users', {
+                        create: {
                             icon: 'add',
                             tooltip: 'Adicionar usuário',
                             isFreeAction: true,
                         },
-                        {
+                        edit: {
                             icon: 'edit',
                             tooltip: 'Editar usuário'
                         },
-                        {
+                        delete: {
                             icon: 'delete',
                             tooltip: 'Excluir usuário',
                             onClick: (event, rowData) => this.delete(rowData)
                         }
-                    ]}
+                    })}
                     components={{
                         Action: props => {
                             if (props.action.icon === 'add') {
@@ -161,29 +162,11 @@ export class User extends Component {
                             }
                         }
 
-                    }}
+                    }
+                    }
                     options={{
                         actionsColumnIndex: -1,
                         search: false
-                    }}
-                    localization={{
-                        pagination: {
-                            labelDisplayedRows: '{from}-{to} de {count}',
-                            labelRowsSelect: 'linhas'
-                        },
-                        toolbar: {
-                            nRowsSelected: '{0} linha(s) selecionadas',
-
-                        },
-                        header: {
-                            actions: 'Ações'
-                        },
-                        body: {
-                            emptyDataSourceMessage: 'Sem informações',
-                            filterRow: {
-                                filterTooltip: 'Filter'
-                            }
-                        }
                     }}
                 />
             )

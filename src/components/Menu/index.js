@@ -23,7 +23,7 @@ import TimelineIcon from '@material-ui/icons/Timeline';
 import CloseIcon from '@material-ui/icons/Close';
 import StoreIcon from '@material-ui/icons/Store';
 import { Divider } from '@material-ui/core';
-import { getAuthenticatedUser } from '../../utils'
+import { storage } from '../../utils'
 
 const drawerWidth = 240;
 const useStyles = makeStyles(theme => ({
@@ -70,7 +70,7 @@ export const Menu = (props) => {
     setMobileOpen(!mobileOpen);
   }
 
-  const user = getAuthenticatedUser();
+  const user = storage.get('user');
   let modules = [...new Set(user.profile.permissions.map(p => p.moduleId)), 0]
 
   const modulesAndProperties = {
