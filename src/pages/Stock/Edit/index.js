@@ -9,20 +9,34 @@ import { Form, Field } from 'react-final-form'
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
+import Select from '@material-ui/core/Select';
+import { makeStyles } from '@material-ui/core/styles';
+import { isNumber } from 'util';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import Divider from '@material-ui/core/Divider';
-import FormControl from '@material-ui/core/FormControl';
-import FormGroup from '@material-ui/core/FormGroup';
-import Typography from '@material-ui/core/Typography';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import { profileService } from '../../../services'
+import { stockService } from '../../../services'
+
+const useStyles = makeStyles(theme => ({
+    button: {
+        display: 'block',
+        marginTop: theme.spacing(2),
+    },
+    formControl: {
+        marginLeft: 16,
+        marginTop: 10,
+        width: 550,
+    },
+}));
 
 export default function Edit(props) {
+    const classes = useStyles();
     const [open, setOpen] = React.useState(false);
-    const [permissionsSelected, setPermissionSelected] = React.useState(props.profile.permissions)
+    const [selectOpen, setSelectOpen] = React.useState(false);
+    const [stockStatus, setStockStatus] = React.useState('');
 
     const [maxWidth] = React.useState('sm');
     const fullWidth = true;
@@ -35,61 +49,51 @@ export default function Edit(props) {
         setOpen(false);
     };
 
+    const handleSelectOpen = () => {
+        setSelectOpen(true);
+    };
+
+    const handleSelectClose = () => {
+        setSelectOpen(false);
+    };
+
+    const handleChange = event => {
+        setStockStatus(event.target.value);
+    };
+
     const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
     const onSubmit = async values => {
         await sleep(300)
 
-        const { id, name, description } = values;
+        const { lot, description, reference, quantity, tag, store, unitValue } = values;
 
-        const profile = {
-            id,
-            name,
+        const itemStock = {
+            lot,
             description,
-            permissions: permissionsSelected
+            reference,
+            quantity,
+            tag,
+            store,
+            unitValue,
+            entry: {
+                date: new Date()
+            },
+            stockStatus: {
+                status:{
+                    id: stockStatus
+                }
+            }
         }
 
-        await profileService.update(profile);
+        await stockService.update(itemStock);
 
         window.location.reload();
     }
 
-    const handleChange = event => {
-        if (event.target.checked) {
-            if (!permissionsSelected.includes(event.target.value)) {
-                setPermissionSelected([...permissionsSelected, event.target.value]);
-            }
-        }
-        else {
-            setPermissionSelected(
-                permissionsSelected.filter(value => {
-                    return value !== event.target.value;
-                })
-            );
-        }
-    };
 
-    const styles = {
-        moduleStyle: {
-            marginTop: 15,
-            display: 'block'
-        },
-        permissionStyle: {
-            display: 'block',
-            marginLeft: 10
-        },
-        formControlStyle: {
-            marginTop: 30
-        },
-        formGroupStyle: {
-            marginBottom: 15
-        },
-        titleFormStyle: {
-            marginBottom: 15
-        },
-        checkbox: {
-            fontSize: 5
-        }
+    const getStockStatusId = () => {
+        return isNumber(stockStatus) ? stockStatus : props.stock.stockStatus.status.id;
     }
 
     return (
@@ -116,12 +120,28 @@ export default function Edit(props) {
                             onSubmit={onSubmit}
                             validate={values => {
                                 const errors = {}
-                                if (!values.name) {
-                                    errors.name = "Este campo é obrigatório"
+                                if (!values.lot) {
+                                    errors.lot = "Este campo é obrigatório"
                                 }
                                 if (!values.description) {
                                     errors.description = "Este campo é obrigatório"
                                 }
+                                if (!values.reference) {
+                                    errors.reference = "Este campo é obrigatório"
+                                }
+                                if (!values.quantity) {
+                                    errors.quantity = "Este campo é obrigatório"
+                                }
+                                if (!values.tag) {
+                                    errors.tag = "Este campo é obrigatório"
+                                }
+                                if (!values.store) {
+                                    errors.store = "Este campo é obrigatório"
+                                }
+                                if (!values.unitValue) {
+                                    errors.unitValue = "Este campo é obrigatório"
+                                }
+
                                 return errors
                             }}
                             initialValues={{}}
@@ -133,22 +153,9 @@ export default function Edit(props) {
                                             <Grid item xs={12}>
                                                 <Field
                                                     fullWidth
-                                                    name="id"
-                                                    initialValue={props.profile.id}
-                                                    label="Id"
-                                                    disabled
-                                                    component={TextField}
-                                                    type="text"
-                                                    autoComplete="off"
-                                                    variant="outlined"
-                                                />
-                                            </Grid>
-                                            <Grid item xs={12}>
-                                                <Field
-                                                    fullWidth
-                                                    name="name"
-                                                    initialValue={props.profile.name}
-                                                    label="Nome"
+                                                    name="lot"
+                                                    label="Lote"
+                                                    defaultValue={props.stock.lot}
                                                     component={TextField}
                                                     type="text"
                                                     autoComplete="off"
@@ -159,8 +166,8 @@ export default function Edit(props) {
                                                 <Field
                                                     fullWidth
                                                     name="description"
-                                                    initialValue={props.profile.description}
                                                     label="Descrição"
+                                                    defaultValue={props.stock.description}
                                                     component={TextField}
                                                     type="text"
                                                     autoComplete="off"
@@ -168,51 +175,94 @@ export default function Edit(props) {
                                                 />
                                             </Grid>
                                             <Grid item xs={12}>
-                                                <FormControl component="fieldset" style={styles.formControlStyle}>
-                                                    <FormGroup onChange={handleChange}>
-                                                        <Typography variant="h6" gutterBottom style={styles.titleFormStyle}>
-                                                            Permissões
-                                                        </Typography>
-                                                        {props.permissions.map((p, i, a) => {
-                                                            return (
-                                                                <React.Fragment key={p.moduleName}>
-                                                                    <div style={styles.moduleStyle}>
-                                                                        <Typography variant="subtitle1" gutterBottom>
-                                                                            {p.moduleName}
-                                                                        </Typography>
-                                                                        {p.permissions.map(x => {
-                                                                            return (
-                                                                                <React.Fragment key={x}>
-                                                                                    <div style={styles.permissionStyle}>
-                                                                                        <FormControlLabel
-                                                                                            value={p.moduleName + "|" + x}
-                                                                                            control={
-                                                                                                <Checkbox
-                                                                                                    color="primary"
-                                                                                                    checked={permissionsSelected.includes(p.moduleName + "|" + x)}
-                                                                                                />
-                                                                                            }
-                                                                                            label={x}
-                                                                                        />
-                                                                                    </div>
-                                                                                </React.Fragment>
-                                                                            )
-                                                                        })}
-                                                                        {!(a.length - 1 === i) && (
-                                                                            <Divider variant="fullWidth" />
-                                                                        )}
-                                                                    </div>
-                                                                </React.Fragment>
-                                                            )
-                                                        })}
-                                                    </FormGroup>
-                                                </FormControl>
+                                                <Field
+                                                    fullWidth
+                                                    name="reference"
+                                                    label="Referência"
+                                                    defaultValue={props.stock.reference}
+                                                    component={TextField}
+                                                    type="text"
+                                                    autoComplete="off"
+                                                    variant="outlined"
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12}>
+                                                <Field
+                                                    fullWidth
+                                                    name="quantity"
+                                                    label="Quantidade"
+                                                    defaultValue={props.stock.quantity}
+                                                    component={TextField}
+                                                    type="number"
+                                                    autoComplete="off"
+                                                    variant="outlined"
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12}>
+                                                <Field
+                                                    fullWidth
+                                                    name="tag"
+                                                    label="Etiqueta"
+                                                    defaultValue={props.stock.tag}
+                                                    component={TextField}
+                                                    type="text"
+                                                    autoComplete="off"
+                                                    variant="outlined"
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12}>
+                                                <Field
+                                                    fullWidth
+                                                    name="store"
+                                                    label="Loja"
+                                                    defaultValue={props.stock.store}
+                                                    component={TextField}
+                                                    type="text"
+                                                    autoComplete="off"
+                                                    variant="outlined"
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12}>
+                                                <Field
+                                                    fullWidth
+                                                    name="unitValue"
+                                                    label="Unitário"
+                                                    defaultValue={props.stock.unitValue}
+                                                    component={TextField}
+                                                    type="number"
+                                                    autoComplete="off"
+                                                    variant="outlined"
+                                                />
+                                            </Grid>
+                                            <Button className={classes.button} onClick={handleSelectOpen}
+                                                style={{ display: "none" }}>
+                                                Status
+                                            </Button>
+                                            <FormControl className={classes.formControl}>
+                                                <InputLabel htmlFor="controlled-open-select">Status</InputLabel>
+                                                <Select
+                                                    selectOpen={selectOpen}
+                                                    onClose={handleSelectClose}
+                                                    onOpen={handleSelectOpen}
+                                                    value={getStockStatusId()}
+                                                    onChange={handleChange}
+                                                    inputProps={{
+                                                        name: 'profile',
+                                                        id: 'controlled-open-select',
+                                                    }}
+                                                >
+                                                    {props.stockStatus.map(p => (
+                                                        <MenuItem key={p.id} value={p.id}>{p.name}</MenuItem>
+                                                    ))}
+                                                </Select>
+                                            </FormControl>
+                                            <Grid item xs={12}>
                                                 <DialogActions>
                                                     <Button onClick={handleClose} color="primary">
                                                         Sair
                                                     </Button>
                                                     <Button variant="contained" color="primary" type="submit">
-                                                        Salvar
+                                                        Adicionar
                                                     </Button>
                                                 </DialogActions>
                                             </Grid>
