@@ -9,11 +9,31 @@ import { Form, Field } from 'react-final-form'
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import { makeStyles } from '@material-ui/core/styles';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { stockService } from '../../../services'
 
+const useStyles = makeStyles(theme => ({
+    button: {
+        display: 'block',
+        marginTop: theme.spacing(2),
+    },
+    formControl: {
+        marginLeft: 16,
+        marginTop: 10,
+        width: 550,
+    },
+}));
+
 export default function Create(props) {
+    const classes = useStyles();
     const [open, setOpen] = React.useState(false);
+    const [selectOpen, setSelectOpen] = React.useState(false);
+    const [stockStatus, setStockStatus] = React.useState('');
 
     const [maxWidth] = React.useState('sm');
     const fullWidth = true;
@@ -24,6 +44,18 @@ export default function Create(props) {
 
     const handleClose = () => {
         setOpen(false);
+    };
+
+    const handleSelectOpen = () => {
+        setSelectOpen(true);
+    };
+
+    const handleSelectClose = () => {
+        setSelectOpen(false);
+    };
+
+    const handleChange = event => {
+        setStockStatus(event.target.value);
     };
 
     const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
@@ -43,6 +75,11 @@ export default function Create(props) {
             unitValue,
             entry: {
                 date: new Date()
+            },
+            stockStatus: {
+                status:{
+                    id: stockStatus
+                }
             }
         }
 
@@ -184,6 +221,28 @@ export default function Create(props) {
                                                     variant="outlined"
                                                 />
                                             </Grid>
+                                            <Button className={classes.button} onClick={handleSelectOpen}
+                                                style={{ display: "none" }}>
+                                                Status
+                                            </Button>
+                                            <FormControl className={classes.formControl}>
+                                                <InputLabel htmlFor="controlled-open-select">Status</InputLabel>
+                                                <Select
+                                                    selectOpen={selectOpen}
+                                                    onClose={handleSelectClose}
+                                                    onOpen={handleSelectOpen}
+                                                    value={stockStatus}
+                                                    onChange={handleChange}
+                                                    inputProps={{
+                                                        name: 'profile',
+                                                        id: 'controlled-open-select',
+                                                    }}
+                                                >
+                                                    {props.stockStatus.map(p => (
+                                                        <MenuItem key={p.id} value={p.id}>{p.name}</MenuItem>
+                                                    ))}
+                                                </Select>
+                                            </FormControl>
                                             <Grid item xs={12}>
                                                 <DialogActions>
                                                     <Button onClick={handleClose} color="primary">
