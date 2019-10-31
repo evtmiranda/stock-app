@@ -9,6 +9,7 @@ import { Menu } from '../../components'
 import { stockService } from '../../services'
 import { formatDate, makeActions } from '../../utils'
 import Create from './Create'
+import Edit from './Edit'
 import './styles.css'
 import { isNullOrUndefined } from 'util';
 
@@ -18,6 +19,7 @@ export class Stock extends Component {
         this.state = {
             itemsStock: [],
             loaded: false,
+            stockStatus: []
         }
     }
 
@@ -47,7 +49,19 @@ export class Stock extends Component {
     async componentDidMount() {
         await this.loadStock();
 
-        this.setState({ loaded: true })
+        const stockStatus = [
+            { "id": 2, "name": "aviamento" },
+            { "id": 3, "name": "preparação" },
+            { "id": 4, "name": "mesa" }
+        ]
+
+        this.setState({ loaded: true, stockStatus })
+    }
+
+    getStock(stockId) {
+        const stock = this.state.itemsStock.filter(p => p.id === stockId);
+
+        return stock.length > 0 ? stock[0] : stock;
     }
 
     render() {
@@ -68,6 +82,7 @@ export class Stock extends Component {
                         { title: "Quantidade", field: "quantity" },
                         { title: "Data de entrada", field: "entry.date" },
                         { title: "Etiqueta", field: "tag" },
+                        { title: "Status", field: "stockStatus.status.description" },
                         { title: "Loja", field: "store" },
                         { title: "Unitário", field: "unitValue" },
                         { title: "Quantidade de Saída", field: "output.quantity" },
@@ -81,6 +96,10 @@ export class Stock extends Component {
                             tooltip: "Adicionar item",
                             isFreeAction: true
                         },
+                        edit: {
+                            icon: 'edit',
+                            tooltip: 'Editar item'
+                        },
                         delete: {
                             icon: 'delete',
                             tooltip: "Excluir item",
@@ -93,18 +112,32 @@ export class Stock extends Component {
                                 return (
                                     <Create
                                         action={props.action}
+                                        stockStatus={this.state.stockStatus}
                                     />
                                 )
                             }
-                            return (
-                                <Tooltip title={props.action.tooltip}>
-                                    <IconButton aria-label={props.action.icon} size="small"
-                                        onClick={(event) => props.action.onClick(event, props.data)}
-                                    >
-                                        <Icon>{props.action.icon}</Icon>
-                                    </IconButton>
-                                </Tooltip>
-                            )
+                            else if (props.action.icon === 'edit' && !isNullOrUndefined(props.data.id)) {
+                                const stock = this.getStock(props.data.id)
+
+                                return (
+                                    <Edit
+                                        action={props.action}
+                                        stock={stock}
+                                        stockStatus={this.state.stockStatus}
+                                    />
+                                )
+                            }
+                            else {
+                                return (
+                                    <Tooltip title={props.action.tooltip}>
+                                        <IconButton aria-label={props.action.icon} size="small"
+                                            onClick={(event) => props.action.onClick(event, props.data)}
+                                        >
+                                            <Icon>{props.action.icon}</Icon>
+                                        </IconButton>
+                                    </Tooltip>
+                                )
+                            }
                         }
                     }}
                     options={{
