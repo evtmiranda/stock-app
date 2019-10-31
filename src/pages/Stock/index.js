@@ -7,7 +7,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Icon from '@material-ui/core/Icon';
 import { Menu } from '../../components'
 import { stockService } from '../../services'
-import formatDate from '../../utils/formatDate'
+import { formatDate, makeActions } from '../../utils'
 import Create from './Create'
 import './styles.css'
 import { isNullOrUndefined } from 'util';
@@ -17,7 +17,7 @@ export class Stock extends Component {
         super(props)
         this.state = {
             itemsStock: [],
-            loaded: false
+            loaded: false,
         }
     }
 
@@ -33,7 +33,7 @@ export class Stock extends Component {
             createdAt: formatDate(i.createdAt),
         }));
 
-        this.setState({ itemsStock: itemsStock });
+        this.setState({ itemsStock });
     }
 
     async delete(rowData) {
@@ -75,18 +75,18 @@ export class Stock extends Component {
                         { title: "Criado Em", field: "createdAt" }
                     ]}
                     data={this.state.itemsStock}
-                    actions={[
-                        {
+                    actions={makeActions('stock', {
+                        create: {
                             icon: 'add',
-                            tooltip: 'Adicionar item',
+                            tooltip: "Adicionar item",
                             isFreeAction: true
                         },
-                        {
+                        delete: {
                             icon: 'delete',
-                            tooltip: 'Excluir item',
+                            tooltip: "Excluir item",
                             onClick: (_event, rowData) => this.delete(rowData)
-                        },
-                    ]}
+                        }
+                    })}
                     components={{
                         Action: props => {
                             if (props.action.icon === 'add') {

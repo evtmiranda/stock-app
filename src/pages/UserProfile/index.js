@@ -3,14 +3,14 @@ import React, { Component } from 'react'
 import { Redirect } from 'react-router-dom'
 import Create from './Create'
 import Edit from './Edit'
-import MaterialTable from "material-table";
+import Table from "../../components/Table";
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { Menu } from '../../components'
 import { profileService, webGatewayService } from '../../services'
-import formatDate from '../../utils/formatDate'
+import { formatDate, makeActions } from '../../utils'
 
 export class UserProfile extends Component {
     constructor(props) {
@@ -102,7 +102,7 @@ export class UserProfile extends Component {
             body = (
                 <div>
                     {this.renderRedirect()}
-                    <MaterialTable
+                    <Table
                         title="Perfis de Usuário"
                         columns={[
                             { title: "Nome", field: "name" },
@@ -114,22 +114,22 @@ export class UserProfile extends Component {
                             search: false,
                             actionsColumnIndex: -1
                         }}
-                        actions={[
-                            {
+                        actions={makeActions('userProfiles', {
+                            create: {
                                 icon: 'add',
                                 tooltip: 'Adicionar perfil',
                                 isFreeAction: true
                             },
-                            {
+                            edit: {
                                 icon: 'edit',
                                 tooltip: 'Editar perfil'
                             },
-                            {
+                            delete: {
                                 icon: 'delete',
                                 tooltip: 'Excluir perfil',
                                 onClick: (_event, rowData) => this.delete(rowData)
                             }
-                        ]}
+                        })}
                         components={{
                             Action: props => {
                                 if (props.action.icon === 'add') {
@@ -160,25 +160,6 @@ export class UserProfile extends Component {
                                             </IconButton>
                                         </Tooltip>
                                     )
-                                }
-                            }
-                        }}
-                        localization={{
-                            pagination: {
-                                labelDisplayedRows: '{from}-{to} de {count}',
-                                labelRowsSelect: 'linhas'
-                            },
-                            toolbar: {
-                                nRowsSelected: '{0} linha(s) selecionadas',
-
-                            },
-                            header: {
-                                actions: 'Ações'
-                            },
-                            body: {
-                                emptyDataSourceMessage: 'Sem informações',
-                                filterRow: {
-                                    filterTooltip: 'Filter'
                                 }
                             }
                         }}
