@@ -16,7 +16,7 @@ import Typography from '@material-ui/core/Typography';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import HomeIcon from '@material-ui/icons/Home';
+// import HomeIcon from '@material-ui/icons/Home';
 import SupervisorAccountIcon from '@material-ui/icons/SupervisorAccount';
 import PermIdentityIcon from '@material-ui/icons/PermIdentity';
 import TimelineIcon from '@material-ui/icons/Timeline';
@@ -74,7 +74,7 @@ export const Menu = (props) => {
   let modules = [...new Set(user.profile.permissions.map(p => p.moduleId)), 0]
 
   const modulesAndProperties = {
-    "Tela Inicial": [1, "home", <HomeIcon />],
+    //"Tela Inicial": [1, "home", <HomeIcon />],
     "Estoque": [2, "stock", <StoreIcon />],
     "Usuários": [3, "users", <SupervisorAccountIcon />],
     "Perfis de Usuário": [4, "userProfiles", <PermIdentityIcon />],
