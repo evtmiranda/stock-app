@@ -9,6 +9,7 @@ import { Form, Field } from 'react-final-form'
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -30,6 +31,12 @@ const useStyles = makeStyles(theme => ({
         marginTop: 10,
         width: 550,
     },
+    textField: {
+        width: 200,
+    },
+    margin: {
+        margin: theme.spacing(1),
+    }
 }));
 
 export default function Edit(props) {
@@ -66,9 +73,7 @@ export default function Edit(props) {
     const onSubmit = async values => {
         await sleep(300)
 
-        const { lot, description, reference, quantity, tag, store, unitValue } = values;
-
-        const itemStock = {
+        const {
             lot,
             description,
             reference,
@@ -76,12 +81,24 @@ export default function Edit(props) {
             tag,
             store,
             unitValue,
-            entry: {
-                date: new Date()
-            },
+            outputDate,
+            outputQuantity
+        } = values;
+
+        const itemStock = {
+            id: props.stock.id,
+            lot,
+            description,
+            reference,
+            quantity,
+            tag,
+            store,
+            unitValue,
+            outputDate,
+            outputQuantity,
             stockStatus: {
-                status:{
-                    id: stockStatus
+                status: {
+                    id: getStockStatusId()
                 }
             }
         }
@@ -234,6 +251,33 @@ export default function Edit(props) {
                                                     variant="outlined"
                                                 />
                                             </Grid>
+                                            <Grid item xs={12}>
+                                                <Field
+                                                    fullWidth
+                                                    name="outputQuantity"
+                                                    label="Quantidade de saída"
+                                                    defaultValue={props.stock.output.quantity}
+                                                    component={TextField}
+                                                    type="number"
+                                                    autoComplete="off"
+                                                    variant="outlined"
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12}>
+                                                <Field
+                                                    fullWidth
+                                                    name="outputDate"
+                                                    label="Data de saída"
+                                                    defaultValue={props.stock.output.date}
+                                                    component={TextField}
+                                                    InputProps={{
+                                                        startAdornment: <InputAdornment position="start"></InputAdornment>,
+                                                    }}
+                                                    type="date"
+                                                    autoComplete="off"
+                                                    variant="outlined"
+                                                />
+                                            </Grid>
                                             <Button className={classes.button} onClick={handleSelectOpen}
                                                 style={{ display: "none" }}>
                                                 Status
@@ -262,7 +306,7 @@ export default function Edit(props) {
                                                         Sair
                                                     </Button>
                                                     <Button variant="contained" color="primary" type="submit">
-                                                        Adicionar
+                                                        Salvar
                                                     </Button>
                                                 </DialogActions>
                                             </Grid>
