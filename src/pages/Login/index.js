@@ -25,7 +25,7 @@ export class Login extends Component {
 
             if (authenticated) {
                 // eslint-disable-next-line react/prop-types
-                this.props.history.push("home");
+                this.props.history.push("stock");
             } else {
                 this.setState({
                     loginMessageProps: {
