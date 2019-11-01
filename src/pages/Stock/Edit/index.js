@@ -296,7 +296,7 @@ export default function Edit(props) {
                                                     }}
                                                 >
                                                     {props.stockStatus.map(p => (
-                                                        <MenuItem key={p.id} value={p.id}>{p.name}</MenuItem>
+                                                        <MenuItem key={p.id} value={p.id}>{p.description}</MenuItem>
                                                     ))}
                                                 </Select>
                                             </FormControl>
