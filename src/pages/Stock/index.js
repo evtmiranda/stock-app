@@ -6,7 +6,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import Icon from '@material-ui/core/Icon';
 import { Menu } from '../../components'
-import { stockService } from '../../services'
+import { stockService, statusService } from '../../services'
 import { formatDate, makeActions } from '../../utils'
 import Create from './Create'
 import Edit from './Edit'
@@ -38,6 +38,18 @@ export class Stock extends Component {
         this.setState({ itemsStock });
     }
 
+    async loadStatus() {
+        const filters = 'deleted_at=null';
+
+        let stockStatus = await statusService.get(filters);
+
+        stockStatus = stockStatus.map(s => {
+            return { id: s.id, description: s.description }
+        })
+
+        this.setState({ stockStatus });
+    }
+
     async delete(rowData) {
         const { id } = rowData;
 
@@ -48,14 +60,9 @@ export class Stock extends Component {
 
     async componentDidMount() {
         await this.loadStock();
+        await this.loadStatus();
 
-        const stockStatus = [
-            { "id": 2, "name": "aviamento" },
-            { "id": 3, "name": "preparação" },
-            { "id": 4, "name": "mesa" }
-        ]
-
-        this.setState({ loaded: true, stockStatus })
+        this.setState({ loaded: true })
     }
 
     getStock(stockId) {
