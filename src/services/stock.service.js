@@ -37,8 +37,21 @@ async function create(stockItem) {
     return createdStockItem;
 }
 
+async function update(stockItem) {
+    const config = {
+        headers: authHeader()
+    };
+
+    const response = await api.put(`v1/stocks/${stockItem.id}`, stockItem, config)
+
+    const updatedStockItem = response.data;
+
+    return updatedStockItem;
+}
+
 export const stockService = {
     get,
     remove,
-    create
+    create,
+    update
 };
