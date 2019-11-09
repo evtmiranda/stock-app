@@ -11,13 +11,14 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
+import Typography from '@material-ui/core/Typography';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { stockService } from '../../../services'
 
-const useStyles = makeStyles(theme => ({
+let useStyles = makeStyles(theme => ({
     button: {
         display: 'block',
         marginTop: theme.spacing(2),
@@ -26,14 +27,15 @@ const useStyles = makeStyles(theme => ({
         marginLeft: 16,
         marginTop: 10,
         width: 550,
-    },
+    }
 }));
 
 export default function Create(props) {
-    const classes = useStyles();
+    let classes = useStyles();
     const [open, setOpen] = React.useState(false);
     const [selectOpen, setSelectOpen] = React.useState(false);
     const [stockStatus, setStockStatus] = React.useState('');
+    const [selectMessageProps, setSelectMessageProps] = React.useState('');
 
     const [maxWidth] = React.useState('sm');
     const fullWidth = true;
@@ -56,12 +58,23 @@ export default function Create(props) {
 
     const handleChange = event => {
         setStockStatus(event.target.value);
+        setSelectMessageProps('')
     };
 
     const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
     const onSubmit = async values => {
         await sleep(300)
+
+        if (stockStatus === "") {
+            setSelectMessageProps({
+                children: "Este campo é obrigatório",
+                paragraph: true,
+                color: "error"
+            })
+
+            return
+        }
 
         const { lot, description, reference, quantity, tag, store, unitValue } = values;
 
@@ -77,7 +90,7 @@ export default function Create(props) {
                 date: new Date()
             },
             stockStatus: {
-                status:{
+                status: {
                     id: stockStatus
                 }
             }
@@ -239,9 +252,14 @@ export default function Create(props) {
                                                     }}
                                                 >
                                                     {props.stockStatus.map(p => (
-                                                        <MenuItem key={p.id} value={p.id}>{p.name}</MenuItem>
+                                                        <MenuItem key={p.id} value={p.id}>{p.description}</MenuItem>
                                                     ))}
                                                 </Select>
+                                                <Typography
+                                                    {...selectMessageProps}
+                                                >
+                                                    {selectMessageProps.children}
+                                                </Typography>
                                             </FormControl>
                                             <Grid item xs={12}>
                                                 <DialogActions>
