@@ -3,5 +3,7 @@ div#main-login {
 }
 
 div#main-login .title {
-    margin-top: 5em;
+    margin-top: 100px;
+    height: 150px;
+    margin-bottom: 20px;
 }
