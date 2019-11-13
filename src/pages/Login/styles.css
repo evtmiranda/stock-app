@@ -7,3 +7,8 @@ div#main-login .title {
     height: 150px;
     margin-bottom: 20px;
 }
+
+img#logo{
+    max-width: 200px;
+    margin-top: 10%;
+}
