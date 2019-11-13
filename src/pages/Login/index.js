@@ -60,7 +60,7 @@ export class Login extends Component {
                                 onSubmit={handleSubmit}>
                                 <Grid container spacing={3}>
                                     <Grid item xs={12}>
-                                        <img alt="logo" src="./itibanTransparente.png" />
+                                        <img id="logo" alt="logo" src="./itibanTransparente.png" />
                                     </Grid>
                                     <Grid item xs={12}>
                                         <Field
