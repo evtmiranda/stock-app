@@ -38,7 +38,10 @@ export default class Table extends Component {
                     toolbar: {
                         nRowsSelected: '{0} linha(s) selecionadas',
                         searchPlaceholder: 'Pesquisar',
-                        searchTooltip: 'Pesquisar'
+                        searchTooltip: 'Pesquisar',
+                        exportTitle: 'Exportar',
+                        exportAriaLabel: 'Exportar',
+                        exportName: 'Exportar como csv'
                     },
                     header: {
                         actions: 'Ações'
@@ -48,7 +51,7 @@ export default class Table extends Component {
                         filterRow: {
                             filterTooltip: 'Filter'
                         }
-                    }
+                    },
                 }}
             />
         )
