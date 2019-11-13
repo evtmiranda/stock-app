@@ -24,7 +24,7 @@ export class Reports extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            fromDate: new Date(),
+            fromDate: '2019-01-02',
             toDate: new Date(),
             open: false,
             selectOpen: false,
@@ -32,7 +32,7 @@ export class Reports extends Component {
             stockStatuses: [],
             stocks: [],
             searched: false,
-            store: ''
+            store: 'todas'
         }
     }
 
@@ -75,14 +75,14 @@ export class Reports extends Component {
 
         let filters = `from=${this.state.fromDate}&to=${this.state.toDate}`
 
-        const hasStore = this.state.store !== ''
+        const hasStore = this.state.store !== 'todas'
         const hasStatus = status && status[0] && status[0].description !== "todos"
 
-        if(hasStore){
+        if (hasStore) {
             filters = filters.concat(`&store=${this.state.store}`)
         }
 
-        if(hasStatus){
+        if (hasStatus) {
             filters = filters.concat(`&status=${status[0].description}`)
         }
 
@@ -181,6 +181,7 @@ export class Reports extends Component {
                                 <TextField
                                     id="filled-name"
                                     label="Loja"
+                                    value={this.state.store}
                                     onChange={this.handleStoreFieldChange}
                                     margin="normal"
                                 />
