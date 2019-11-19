@@ -40,10 +40,10 @@ export default function Edit(props) {
     const onSubmit = async values => {
         await sleep(300)
 
-        const { id, name, description } = values;
+        const { name, description } = values;
 
         const profile = {
-            id,
+            id: props.profile.id,
             name,
             description,
             permissions: permissionsSelected
@@ -130,19 +130,6 @@ export default function Edit(props) {
                                     onSubmit={handleSubmit}>
                                     <div style={{ minWidth: 100 }}>
                                         <Grid container spacing={3} style={{ minWidth: 100 }}>
-                                            <Grid item xs={12}>
-                                                <Field
-                                                    fullWidth
-                                                    name="id"
-                                                    initialValue={props.profile.id}
-                                                    label="Id"
-                                                    disabled
-                                                    component={TextField}
-                                                    type="text"
-                                                    autoComplete="off"
-                                                    variant="outlined"
-                                                />
-                                            </Grid>
                                             <Grid item xs={12}>
                                                 <Field
                                                     fullWidth

@@ -1,5 +1,8 @@
+/* eslint-disable no-undef */
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react'
 import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
 import { Form, Field } from 'react-final-form'
 import Typography from '@material-ui/core/Typography';
@@ -8,15 +11,20 @@ import { userService } from '../../services'
 import './styles.css'
 
 export class Login extends Component {
-    state = {
-        loginMessageProps: {}
+    constructor(props) {
+        super(props)
+        this.state = {
+            loading: false,
+            loginMessageProps: {}
+        }
     }
 
     render() {
-        // eslint-disable-next-line no-undef
         const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
         const onSubmit = async values => {
+            this.setState({ loading: true })
+
             await sleep(300)
 
             const { username, password } = values;
@@ -24,7 +32,6 @@ export class Login extends Component {
             const authenticated = await userService.authenticate(username, password)
 
             if (authenticated) {
-                // eslint-disable-next-line react/prop-types
                 this.props.history.push("home");
             } else {
                 this.setState({
@@ -60,7 +67,7 @@ export class Login extends Component {
                                 onSubmit={handleSubmit}>
                                 <Grid container spacing={3}>
                                     <Grid item xs={12}>
-                                        <h1 className="title">ITIBAN</h1>
+                                        <img id="logo" alt="logo" src="./itibanTransparente.png" />
                                     </Grid>
                                     <Grid item xs={12}>
                                         <Field
@@ -90,9 +97,13 @@ export class Login extends Component {
                                         >
                                             {this.state.loginMessageProps.children}
                                         </Typography>
-                                        <Button variant="contained" color="primary" type="submit">
-                                            Acessar minha conta
-                                    </Button>
+                                        {this.state.loading ? (
+                                            <CircularProgress></CircularProgress>
+                                        ) : (
+                                                <Button variant="contained" color="primary" type="submit">
+                                                    Acessar minha conta
+                                                </Button>
+                                            )}
                                     </Grid>
                                 </Grid>
                             </form>

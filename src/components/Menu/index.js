@@ -1,3 +1,6 @@
+/* eslint-disable react/jsx-key */
+/* eslint-disable no-undef */
+/* eslint-disable react/prop-types */
 import React from 'react';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
@@ -20,6 +23,7 @@ import TimelineIcon from '@material-ui/icons/Timeline';
 import CloseIcon from '@material-ui/icons/Close';
 import StoreIcon from '@material-ui/icons/Store';
 import { Divider } from '@material-ui/core';
+import { storage } from '../../utils'
 
 const drawerWidth = 240;
 const useStyles = makeStyles(theme => ({
@@ -48,6 +52,7 @@ const useStyles = makeStyles(theme => ({
   content: {
     flexGrow: 1,
     padding: theme.spacing(3),
+    overflowX: 'auto'
   },
   link: {
     textDecoration: 'none',
@@ -65,46 +70,36 @@ export const Menu = (props) => {
     setMobileOpen(!mobileOpen);
   }
 
+  const user = storage.get('user');
+  let modules = [...new Set(user.profile.permissions.map(p => p.moduleId)), 0]
+
+  const modulesAndProperties = {
+    "Tela Inicial": [1, "home", <HomeIcon />],
+    "Estoque": [2, "stock", <StoreIcon />],
+    "Usuários": [3, "users", <SupervisorAccountIcon />],
+    "Perfis de Usuário": [4, "userProfiles", <PermIdentityIcon />],
+    "Relatórios": [5, "reports", <TimelineIcon />],
+    "Sair": [0, "logoff", <CloseIcon />]
+  }
+
+  const moduleNames = Object.keys(modulesAndProperties).filter(key => {
+    return modules.includes(modulesAndProperties[key][0])
+  });
+
   const drawer = (
     <div>
       <div className={classes.toolbar} />
       <Divider />
       <List>
         {
-          ['Tela Inicial', 'Estoque', 'Usuários', 'Perfis de Usuário', 'Relatórios', 'Sair'].map((text) => {
-            const routes = {
-              "Tela Inicial": "home",
-              "Estoque": "stock",
-              "Usuários": "users",
-              "Perfis de Usuário": "userProfiles",
-              "Relatórios": "reports",
-              "Sair": "logoff"
-            };
-
+          moduleNames.map((text) => {
             return (
-              <React.Fragment key={routes[text]}>
-                <Link to={routes[text]} className={classes.link}>
+              <React.Fragment key={modulesAndProperties[text][1]}>
+                <Link to={modulesAndProperties[text][1]} className={classes.link}>
                   <ListItem
                     button
                   >
-                    {text === "Tela Inicial" && (
-                      <ListItemIcon><HomeIcon /></ListItemIcon>
-                    )}
-                    {text === "Estoque" && (
-                      <ListItemIcon><StoreIcon /></ListItemIcon>
-                    )}
-                    {text === "Usuários" && (
-                      <ListItemIcon><SupervisorAccountIcon /></ListItemIcon>
-                    )}
-                    {text === "Perfis de Usuário" && (
-                      <ListItemIcon><PermIdentityIcon /></ListItemIcon>
-                    )}
-                    {text === "Relatórios" && (
-                      <ListItemIcon><TimelineIcon /></ListItemIcon>
-                    )}
-                    {text === "Sair" && (
-                      <ListItemIcon><CloseIcon /></ListItemIcon>
-                    )}
+                    <ListItemIcon>{modulesAndProperties[text][2]}</ListItemIcon>
                     <ListItemText primary={text} />
                   </ListItem>
                 </Link>
@@ -112,7 +107,6 @@ export const Menu = (props) => {
             );
           })}
       </List>
-
     </div>
   )
 
@@ -136,7 +130,6 @@ export const Menu = (props) => {
         </Toolbar>
       </AppBar>
       <nav className={classes.drawer} aria-label="mailbox folders">
-        {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
         <Hidden smUp implementation="css">
           <Drawer
             container={container}
@@ -148,7 +141,7 @@ export const Menu = (props) => {
               paper: classes.drawerPaper,
             }}
             ModalProps={{
-              keepMounted: true, // Better open performance on mobile.
+              keepMounted: true,
             }}
           >
             {drawer}
