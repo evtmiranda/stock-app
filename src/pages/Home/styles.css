@@ -11,6 +11,12 @@ div#content {
     margin-left: 12px;
 }
 
-.chartTitle{
+.chartTitle {
     text-align: center;
+    margin-bottom: 1em;
+}
+
+.chartNumber {
+    text-align: center;
+    font-size: 10em;
 }
