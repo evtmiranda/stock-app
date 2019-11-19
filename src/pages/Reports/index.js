@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Menu } from '../../components'
 import 'date-fns';
 import Grid from '@material-ui/core/Grid';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import DateFnsUtils from '@date-io/date-fns';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
@@ -24,6 +25,7 @@ export class Reports extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            loaded: false,
             fromDate: '2019-01-02',
             toDate: new Date(),
             open: false,
@@ -118,118 +120,128 @@ export class Reports extends Component {
 
     async componentDidMount() {
         await this.loadStatus()
+
+        this.setState({ loaded: true })
     }
 
     render() {
-        const body = (
-            <div>
-                <div id="content">
-                    <Typography variant="h6" id="title">
-                        Gerar Relatório
-                    </Typography>
-                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                        <Grid container justify="center" spacing={3}>
-                            <Grid item xs={12} sm={2}>
-                                <KeyboardDatePicker
-                                    disableToolbar
-                                    variant="inline"
-                                    format="dd/MM/yyyy"
-                                    margin="normal"
-                                    id="date-picker-inline"
-                                    label="Data início"
-                                    value={this.state.fromDate}
-                                    onChange={this.handleFromDateChange}
-                                    KeyboardButtonProps={{
-                                        'aria-label': 'trocar data',
-                                    }}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={2}>
-                                <KeyboardDatePicker
-                                    margin="normal"
-                                    id="date-picker-dialog"
-                                    label="Data fim"
-                                    format="dd/MM/yyyy"
-                                    value={this.state.toDate}
-                                    onChange={this.handleToDateChange}
-                                    KeyboardButtonProps={{
-                                        'aria-label': 'trocar data',
-                                    }}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={2}>
-                                <FormControl id="formControl">
-                                    <InputLabel htmlFor="controlled-open-select">Status</InputLabel>
-                                    <Select
-                                        selectOpen={this.state.selectOpen}
-                                        onClose={this.handleSelectClose}
-                                        onOpen={this.handleSelectOpen}
-                                        value={this.getStockStatusId()}
-                                        onChange={this.handleChange}
-                                        inputProps={{
-                                            name: 'profile',
-                                            id: 'controlled-open-select',
-                                        }}
-                                    >
-                                        {this.state.stockStatuses.map(p => (
-                                            <MenuItem key={p.id} value={p.id}>{p.description}</MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
-                            </Grid>
-                            <Grid item xs={12} sm={2}>
-                                <TextField
-                                    id="filled-name"
-                                    label="Loja"
-                                    value={this.state.store}
-                                    onChange={this.handleStoreFieldChange}
-                                    margin="normal"
-                                />
-                            </Grid>
-                        </Grid>
-                        <div id="buttonExport">
-                            <Grid item xs={12}>
-                                <Button variant="contained" color="primary" onClick={this.getReport}>
-                                    Gerar relatório
-                                </Button>
-                            </Grid>
-                        </div>
-
-                        {this.state.stocks.length === 0 && this.state.searched && (
-                            <div id="zeroItemFoundMessage">
-                                <p>Nenhum item encontrado</p>
-                            </div>
-                        )}
-                    </MuiPickersUtilsProvider>
-                </div>
-
-                {this.state.stocks.length > 0 && (
-                    <Table
-                        title="Relatório"
-                        columns={[
-                            { title: "Lote", field: "lot" },
-                            { title: "Descricao", field: "description" },
-                            { title: "Referencia", field: "reference" },
-                            { title: "Quantidade", field: "quantity" },
-                            { title: "Data de entrada", field: "entry.date" },
-                            { title: "Etiqueta", field: "tag" },
-                            { title: "Status", field: "stockStatus.status.description" },
-                            { title: "Loja", field: "store" },
-                            { title: "Unitario", field: "unitValue" },
-                            { title: "Quantidade de Saida", field: "output.quantity" },
-                            { title: "Data de Saida", field: "output.date" },
-                            { title: "Criado Em", field: "createdAt" }
-                        ]}
-                        data={this.state.stocks}
-                        options={{
-                            actionsColumnIndex: -1,
-                            exportButton: true,
-                            paging: false
-                        }}
-                    />
-                )}
+        let body = (
+            <div style={{ textAlign: "center" }}>
+                <CircularProgress />
             </div>
         )
+
+        if (this.state.loaded) {
+            body = (
+                <div>
+                    <div id="content">
+                        <Typography variant="h6" id="title">
+                            Gerar Relatório
+                    </Typography>
+                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                            <Grid container justify="center" spacing={3}>
+                                <Grid item xs={12} sm={2}>
+                                    <KeyboardDatePicker
+                                        disableToolbar
+                                        variant="inline"
+                                        format="dd/MM/yyyy"
+                                        margin="normal"
+                                        id="date-picker-inline"
+                                        label="Data início"
+                                        value={this.state.fromDate}
+                                        onChange={this.handleFromDateChange}
+                                        KeyboardButtonProps={{
+                                            'aria-label': 'trocar data',
+                                        }}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={2}>
+                                    <KeyboardDatePicker
+                                        margin="normal"
+                                        id="date-picker-dialog"
+                                        label="Data fim"
+                                        format="dd/MM/yyyy"
+                                        value={this.state.toDate}
+                                        onChange={this.handleToDateChange}
+                                        KeyboardButtonProps={{
+                                            'aria-label': 'trocar data',
+                                        }}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={2}>
+                                    <FormControl id="formControl">
+                                        <InputLabel htmlFor="controlled-open-select">Status</InputLabel>
+                                        <Select
+                                            selectOpen={this.state.selectOpen}
+                                            onClose={this.handleSelectClose}
+                                            onOpen={this.handleSelectOpen}
+                                            value={this.getStockStatusId()}
+                                            onChange={this.handleChange}
+                                            inputProps={{
+                                                name: 'profile',
+                                                id: 'controlled-open-select',
+                                            }}
+                                        >
+                                            {this.state.stockStatuses.map(p => (
+                                                <MenuItem key={p.id} value={p.id}>{p.description}</MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                </Grid>
+                                <Grid item xs={12} sm={2}>
+                                    <TextField
+                                        id="filled-name"
+                                        label="Loja"
+                                        value={this.state.store}
+                                        onChange={this.handleStoreFieldChange}
+                                        margin="normal"
+                                    />
+                                </Grid>
+                            </Grid>
+                            <div id="buttonExport">
+                                <Grid item xs={12}>
+                                    <Button variant="contained" color="primary" onClick={this.getReport}>
+                                        Gerar relatório
+                                </Button>
+                                </Grid>
+                            </div>
+
+                            {this.state.stocks.length === 0 && this.state.searched && (
+                                <div id="zeroItemFoundMessage">
+                                    <p>Nenhum item encontrado</p>
+                                </div>
+                            )}
+                        </MuiPickersUtilsProvider>
+                    </div>
+
+                    {this.state.stocks.length > 0 && (
+                        <Table
+                            title="Relatório"
+                            columns={[
+                                { title: "Lote", field: "lot" },
+                                { title: "Descricao", field: "description" },
+                                { title: "Referencia", field: "reference" },
+                                { title: "Quantidade", field: "quantity" },
+                                { title: "Data de entrada", field: "entry.date" },
+                                { title: "Etiqueta", field: "tag" },
+                                { title: "Status", field: "stockStatus.status.description" },
+                                { title: "Loja", field: "store" },
+                                { title: "Unitario", field: "unitValue" },
+                                { title: "Quantidade de Saida", field: "output.quantity" },
+                                { title: "Data de Saida", field: "output.date" },
+                                { title: "Criado Em", field: "createdAt" }
+                            ]}
+                            data={this.state.stocks}
+                            options={{
+                                actionsColumnIndex: -1,
+                                exportButton: true,
+                                paging: false
+                            }}
+                        />
+                    )}
+                </div>
+            )
+        }
 
         return (
             <React.Fragment>
