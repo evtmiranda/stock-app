@@ -124,7 +124,7 @@ export class Home extends Component {
                     <div id="content">
                         <Grid container justify="center" spacing={3}>
                             <Grid item xs={12} sm={6}>
-                                <h2 className="chartTitle">Quantidade de produtos no estoque</h2>
+                                <h2 className="chartTitle">Quantidade de produtos no status estoque</h2>
                                 <p className="chartNumber">{this.state.dataQuantityStock}</p>
                             </Grid>
                             <Grid item xs={12} sm={6}>
