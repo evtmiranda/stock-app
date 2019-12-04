@@ -8,9 +8,11 @@ import { Form, Field } from 'react-final-form'
 import Dialog from '@material-ui/core/Dialog';
 import Grid from '@material-ui/core/Grid';
 import DialogActions from '@material-ui/core/DialogActions';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import FormControl from '@material-ui/core/FormControl';
+import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -27,6 +29,13 @@ const useStyles = makeStyles(theme => ({
     marginTop: 10,
     width: 550,
   },
+  error: {
+    marginTop: 50,
+    marginLeft: 4
+  },
+  actions: {
+    marginTop: 10
+  }
 }));
 
 export default function Create(props) {
@@ -35,6 +44,9 @@ export default function Create(props) {
   const [open, setOpen] = React.useState(false);
   const [selectOpen, setSelectOpen] = React.useState(false);
   const [maxWidth] = React.useState('sm');
+  const [errorMessageProps, setErrorMessageProps] = React.useState('');
+  const [selectMessageProps, setSelectMessageProps] = React.useState('');
+  const [loading, setLoading] = React.useState(false)
   const fullWidth = true;
 
   const handleClickOpen = () => {
@@ -47,20 +59,37 @@ export default function Create(props) {
 
   const handleChange = event => {
     setProfile(event.target.value);
+    setSelectMessageProps('')
   };
 
   const handleSelectOpen = () => {
     setSelectOpen(true);
+    clearErrorMessage();
   };
 
   const handleSelectClose = () => {
     setSelectOpen(false);
   };
 
+  const clearErrorMessage = () => setErrorMessageProps('')
+
   const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
   const onSubmit = async values => {
     await sleep(300)
+    setLoading(true)
+    clearErrorMessage()
+
+    if (profile === "") {
+      setSelectMessageProps({
+        children: "Este campo é obrigatório",
+        paragraph: true,
+        color: "error"
+      })
+
+      setLoading(false)
+      return
+    }
 
     const { name, username, password } = values;
 
@@ -71,7 +100,24 @@ export default function Create(props) {
       profileId: profile
     }
 
-    await userService.create(user);
+    const result = await userService.create(user);
+
+    if (result.errors) {
+      const errors = result.errors
+      const message = errors.map(p => (
+        <li key={p.field}>{p.message}</li>
+      ))
+
+      setErrorMessageProps({
+        title: (<div><p>Atenção</p><br></br></div>),
+        children: message,
+        paragraph: true,
+        color: "error"
+      })
+
+      setLoading(false)
+      return
+    }
 
     window.location.reload();
   }
@@ -173,16 +219,32 @@ export default function Create(props) {
                           <MenuItem key={p.id} value={p.id}>{p.name}</MenuItem>
                         ))}
                       </Select>
+                      <Typography
+                        {...selectMessageProps}
+                      >
+                        {selectMessageProps.children}
+                      </Typography>
                     </FormControl>
                   </Grid>
+                  <Grid className={classes.error}>
+                    <Typography
+                      {...errorMessageProps}
+                    >
+                      {errorMessageProps.title}
+                      {errorMessageProps.children}
+                    </Typography>
+                  </Grid>
                 </div>
-                <DialogActions style={{ marginTop: 50 }}>
+                <DialogActions className={classes.actions}>
                   <Button onClick={handleClose} color="primary">
                     Sair
                   </Button>
-                  <Button variant="contained" color="primary" type="submit">
-                    Adicionar
+                  {loading ? (<CircularProgress></CircularProgress>) : (
+                    <Button variant="contained" color="primary" type="submit">
+                      Adicionar
                   </Button>
+                  )}
+
                 </DialogActions>
               </form>
             )} />
