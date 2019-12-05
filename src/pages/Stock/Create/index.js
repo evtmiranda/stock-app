@@ -12,6 +12,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Typography from '@material-ui/core/Typography';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles';
@@ -27,6 +28,13 @@ let useStyles = makeStyles(theme => ({
         marginLeft: 16,
         marginTop: 10,
         width: 550,
+    },
+    error: {
+        marginTop: 50,
+        marginLeft: 16
+    },
+    actions: {
+        marginTop: 10
     }
 }));
 
@@ -36,7 +44,8 @@ export default function Create(props) {
     const [selectOpen, setSelectOpen] = React.useState(false);
     const [stockStatus, setStockStatus] = React.useState('');
     const [selectMessageProps, setSelectMessageProps] = React.useState('');
-
+    const [errorMessageProps, setErrorMessageProps] = React.useState('');
+    const [loading, setLoading] = React.useState(false)
     const [maxWidth] = React.useState('sm');
     const fullWidth = true;
 
@@ -46,6 +55,7 @@ export default function Create(props) {
 
     const handleClose = () => {
         setOpen(false);
+        clearErrorMessage();
     };
 
     const handleSelectOpen = () => {
@@ -54,6 +64,7 @@ export default function Create(props) {
 
     const handleSelectClose = () => {
         setSelectOpen(false);
+        clearErrorMessage();
     };
 
     const handleChange = event => {
@@ -61,10 +72,14 @@ export default function Create(props) {
         setSelectMessageProps('')
     };
 
+    const clearErrorMessage = () => setErrorMessageProps('')
+
     const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
     const onSubmit = async values => {
         await sleep(300)
+        setLoading(true)
+        clearErrorMessage()
 
         if (stockStatus === "") {
             setSelectMessageProps({
@@ -73,6 +88,7 @@ export default function Create(props) {
                 color: "error"
             })
 
+            setLoading(false)
             return
         }
 
@@ -96,7 +112,24 @@ export default function Create(props) {
             }
         }
 
-        await stockService.create(itemStock);
+        const result = await stockService.create(itemStock);
+
+        if (result.errors) {
+            const errors = result.errors
+            const message = errors.map(p => (
+                <li key={p.field}>{p.message}</li>
+            ))
+
+            setErrorMessageProps({
+                titleMessage: (<div><p>Atenção</p><br></br></div>),
+                children: message,
+                paragraph: true,
+                color: "error"
+            })
+
+            setLoading(false)
+            return
+        }
 
         window.location.reload();
     }
@@ -261,14 +294,24 @@ export default function Create(props) {
                                                     {selectMessageProps.children}
                                                 </Typography>
                                             </FormControl>
+                                            <Grid className={classes.error}>
+                                                <Typography
+                                                    {...errorMessageProps}
+                                                >
+                                                    {errorMessageProps.titleMessage}
+                                                    {errorMessageProps.children}
+                                                </Typography>
+                                            </Grid>
                                             <Grid item xs={12}>
-                                                <DialogActions>
+                                                <DialogActions className={classes.actions}>
                                                     <Button onClick={handleClose} color="primary">
                                                         Sair
                                                     </Button>
-                                                    <Button variant="contained" color="primary" type="submit">
-                                                        Adicionar
-                                                    </Button>
+                                                    {loading ? (<CircularProgress></CircularProgress>) : (
+                                                        <Button variant="contained" color="primary" type="submit">
+                                                            Adicionar
+                                                        </Button>
+                                                    )}
                                                 </DialogActions>
                                             </Grid>
                                         </Grid>
