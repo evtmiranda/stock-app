@@ -35,8 +35,6 @@ export class Stock extends Component {
             createdAt: formatDate(i.createdAt),
         }));
 
-        console.log(itemsStock)
-
         this.setState({ itemsStock });
     }
 

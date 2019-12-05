@@ -8,6 +8,7 @@ import Grid from '@material-ui/core/Grid';
 import { Form, Field } from 'react-final-form'
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Divider from '@material-ui/core/Divider';
@@ -21,7 +22,9 @@ import { profileService } from '../../../services'
 export default function Create(props) {
   const [open, setOpen] = React.useState(false);
   const [permissionsSelected, setPermissionSelected] = React.useState([])
-
+  const [errorMessageProps, setErrorMessageProps] = React.useState('');
+  const [selectMessageProps, setSelectMessageProps] = React.useState('');
+  const [loading, setLoading] = React.useState(false)
   const [maxWidth] = React.useState('sm');
   const fullWidth = true;
 
@@ -31,14 +34,31 @@ export default function Create(props) {
 
   const handleClose = () => {
     setOpen(false);
+    clearErrorMessage();
+    setLoading(false)
   };
+
+  const clearErrorMessage = () => setErrorMessageProps('')
 
   const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
   const onSubmit = async values => {
     await sleep(300)
+    setLoading(true)
+    clearErrorMessage()
 
     const { name, description } = values;
+
+    if (permissionsSelected.length === 0) {
+      setSelectMessageProps({
+        children: "É necessário selecionar no mínimo uma permissão.",
+        paragraph: true,
+        color: "error"
+      })
+
+      setLoading(false)
+      return
+    }
 
     const profile = {
       name,
@@ -46,12 +66,30 @@ export default function Create(props) {
       permissions: permissionsSelected
     }
 
-    await profileService.create(profile);
+    const result = await profileService.create(profile);
+
+    if (result.errors) {
+      const errors = result.errors
+      const message = errors.map(p => (
+        <li key={p.field}>{p.message}</li>
+      ))
+
+      setErrorMessageProps({
+        titleMessage: (<div><p>Atenção</p><br></br></div>),
+        children: message,
+        paragraph: true,
+        color: "error"
+      })
+
+      setLoading(false)
+      return
+    }
 
     window.location.reload();
   }
 
   const handleChange = event => {
+    setSelectMessageProps('')
     if (event.target.checked) {
       if (!permissionsSelected.includes(event.target.value)) {
         setPermissionSelected([...permissionsSelected, event.target.value]);
@@ -85,6 +123,13 @@ export default function Create(props) {
     },
     checkbox: {
       fontSize: 5
+    },
+    error: {
+      marginTop: 50,
+      marginLeft: 4
+    },
+    actions: {
+      marginTop: 10
     }
   }
 
@@ -187,15 +232,30 @@ export default function Create(props) {
                                 </React.Fragment>
                               )
                             })}
+                            <Typography
+                              {...selectMessageProps}
+                            >
+                              {selectMessageProps.children}
+                            </Typography>
                           </FormGroup>
                         </FormControl>
-                        <DialogActions>
+                        <Grid style={styles.error}>
+                          <Typography
+                            {...errorMessageProps}
+                          >
+                            {errorMessageProps.titleMessage}
+                            {errorMessageProps.children}
+                          </Typography>
+                        </Grid>
+                        <DialogActions style={styles.actions}>
                           <Button onClick={handleClose} color="primary">
                             Sair
                         </Button>
-                          <Button variant="contained" color="primary" type="submit">
-                            Adicionar
-                      </Button>
+                          {loading ? (<CircularProgress></CircularProgress>) : (
+                            <Button variant="contained" color="primary" type="submit">
+                              Adicionar
+                            </Button>
+                          )}
                         </DialogActions>
                       </Grid>
                     </Grid>

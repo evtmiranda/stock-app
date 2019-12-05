@@ -2,51 +2,82 @@ import { authHeader } from '../helpers';
 import { api } from '../services'
 
 async function get(filters) {
-    const config = {
-        headers: authHeader()
-    };
+    try {
+        const config = {
+            headers: authHeader()
+        };
 
-    const response = await api.get(`v1/profiles?${filters}`, config)
+        const response = await api.get(`v1/profiles?${filters}`, config)
 
-    const profiles = response.data;
+        const profiles = response.data;
 
-    return profiles;
+        return profiles;
+    } catch (error) {
+        return errorResponse(error)
+    }
 }
 
 async function create(profile) {
-    const config = {
-        headers: authHeader()
-    };
+    try {
+        const config = {
+            headers: authHeader()
+        };
 
-    const response = await api.post(`v1/profiles`, profile, config)
+        const response = await api.post(`v1/profiles`, profile, config)
 
-    const createdProfile = response.data;
+        const createdProfile = response.data;
 
-    return createdProfile;
+        return createdProfile;
+    } catch (error) {
+        return errorResponse(error)
+    }
 }
 
 async function remove(id) {
-    const config = {
-        headers: authHeader()
-    };
+    try {
+        const config = {
+            headers: authHeader()
+        };
 
-    const response = await api.delete(`v1/profiles/${id}`, config)
+        const response = await api.delete(`v1/profiles/${id}`, config)
 
-    const rowsDeleted = response.data;
+        const rowsDeleted = response.data;
 
-    return rowsDeleted;
+        return rowsDeleted;
+    } catch (error) {
+        return errorResponse(error)
+    }
 }
 
 async function update(profile) {
-    const config = {
-        headers: authHeader()
-    };
+    try {
+        const config = {
+            headers: authHeader()
+        };
 
-    const response = await api.put(`v1/profiles/${profile.id}`, profile, config)
+        const response = await api.put(`v1/profiles/${profile.id}`, profile, config)
 
-    const rowsUpdated = response.data;
+        const rowsUpdated = response.data;
 
-    return rowsUpdated;
+        return rowsUpdated;
+    } catch (error) {
+        return errorResponse(error)
+    }
+}
+
+function errorResponse(error) {
+    if (error.response) {
+        return error.response.data
+    }
+    else {
+        return {
+            errors: [
+                {
+                    erro: "Oops, ocorreu algo inesperado, por favor, tente novamente"
+                }
+            ]
+        }
+    }
 }
 
 export const profileService = {
