@@ -1,10 +1,10 @@
 import { storage } from '../utils'
 
 export function authHeader() {
-    const user = storage.get('user')
+    const userToken = storage.get('userToken')
 
-    if (user && user.authdata) {
-        return { 'Authorization': 'Basic ' + user.authdata };
+    if (userToken) {
+        return { 'Authorization': 'Bearer ' + userToken };
     } else {
         return {};
     }

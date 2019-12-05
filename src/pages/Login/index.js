@@ -31,24 +31,28 @@ export class Login extends Component {
 
             const { username, password } = values;
 
-            const authenticated = await userService.authenticate(username, password)
+            try {
+                const authenticated = await userService.authenticate(username, password)
 
-            if (authenticated) {
-                const user = storage.get('user');
-                const modules = [...new Set(user.profile.permissions.map(p => p.moduleId)), 0]
+                if (authenticated) {
+                    const user = storage.get('user');
+                    const modules = [...new Set(user.profile.permissions.map(p => p.moduleId)), 0]
 
-                const moduleName = MODULES[Math.min(...modules.filter(p => p > 0))]
+                    const moduleName = MODULES[Math.min(...modules.filter(p => p > 0))]
 
-                this.props.history.push(moduleName);
-            } else {
-                this.setState({
-                    loading: false,
-                    loginMessageProps: {
-                        children: "Ops, não foi possível realizar o login, verifique se os dados estão corretos.",
-                        paragraph: true,
-                        color: "error"
-                    }
-                })
+                    this.props.history.push(moduleName);
+                } else {
+                    this.setState({
+                        loading: false,
+                        loginMessageProps: {
+                            children: "Ops, não foi possível realizar o login, verifique se os dados estão corretos.",
+                            paragraph: true,
+                            color: "error"
+                        }
+                    })
+                }
+            } catch (error) {
+                this.setState({ loading: false })
             }
         }
 

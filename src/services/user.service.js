@@ -1,30 +1,42 @@
 /* eslint-disable no-undef */
 import { authHeader } from '../helpers';
 import { api } from '../services'
-import { isUndefined } from 'util';
 import { moduleService, permissionService } from './index'
 import { storage } from '../utils'
 
 async function authenticate(username, password) {
-    const response = await api.get(`v1/users?username=${username}`)
-    const user = response.data[0];
-
-    if (!isUndefined(user) && user.password === password && user.profile) {
-        user.authdata = window.btoa(username + ':' + password);
-        localStorage.setItem('user', JSON.stringify(user));
-
-        const filters = 'deleted_at=null';
-
-        const permissions = await permissionService.get(filters);
-        localStorage.setItem('permissions', JSON.stringify(permissions));
-
-        const modules = await moduleService.get(filters);
-        localStorage.setItem('modules', JSON.stringify(modules));
-
-        return true;
+    const body = {
+        username,
+        password
     }
 
-    return false;
+    const authenticationResponse = await api.post('v1/', body)
+
+    if (authenticationResponse.status !== 200) {
+        return false;
+    }
+
+    localStorage.setItem('userToken', JSON.stringify(authenticationResponse.data.user.jwt));
+
+    const config = {
+        headers: authHeader()
+    };
+
+    const response = await api.get(`v1/users?username=${username}`, config)
+    const user = response.data[0];
+
+    user.authdata = window.btoa(username + ':' + password);
+    localStorage.setItem('user', JSON.stringify(user));
+
+    const filters = 'deleted_at=null';
+
+    const permissions = await permissionService.get(filters);
+    localStorage.setItem('permissions', JSON.stringify(permissions));
+
+    const modules = await moduleService.get(filters);
+    localStorage.setItem('modules', JSON.stringify(modules));
+
+    return true;
 }
 
 function logout() {
