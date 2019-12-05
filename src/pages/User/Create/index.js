@@ -55,6 +55,7 @@ export default function Create(props) {
 
   const handleClose = () => {
     setOpen(false);
+    clearErrorMessage();
   };
 
   const handleChange = event => {
@@ -109,7 +110,7 @@ export default function Create(props) {
       ))
 
       setErrorMessageProps({
-        title: (<div><p>Atenção</p><br></br></div>),
+        titleMessage: (<div><p>Atenção</p><br></br></div>),
         children: message,
         paragraph: true,
         color: "error"
@@ -230,7 +231,7 @@ export default function Create(props) {
                     <Typography
                       {...errorMessageProps}
                     >
-                      {errorMessageProps.title}
+                      {errorMessageProps.titleMessage}
                       {errorMessageProps.children}
                     </Typography>
                   </Grid>

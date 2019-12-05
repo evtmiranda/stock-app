@@ -8,6 +8,8 @@ import Grid from '@material-ui/core/Grid';
 import { Form, Field } from 'react-final-form'
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
+import Typography from '@material-ui/core/Typography';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import DialogContent from '@material-ui/core/DialogContent';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import FormControl from '@material-ui/core/FormControl';
@@ -20,6 +22,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { isNumber } from 'util';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { stockService } from '../../../services'
+import util from 'util'
 
 const useStyles = makeStyles(theme => ({
     button: {
@@ -36,6 +39,13 @@ const useStyles = makeStyles(theme => ({
     },
     margin: {
         margin: theme.spacing(1),
+    },
+    error: {
+        marginTop: 50,
+        marginLeft: 16
+    },
+    actions: {
+        marginTop: 10
     }
 }));
 
@@ -44,7 +54,8 @@ export default function Edit(props) {
     const [open, setOpen] = React.useState(false);
     const [selectOpen, setSelectOpen] = React.useState(false);
     const [stockStatus, setStockStatus] = React.useState('');
-
+    const [errorMessageProps, setErrorMessageProps] = React.useState('');
+    const [loading, setLoading] = React.useState(false)
     const [maxWidth] = React.useState('sm');
     const fullWidth = true;
 
@@ -54,6 +65,7 @@ export default function Edit(props) {
 
     const handleClose = () => {
         setOpen(false);
+        clearErrorMessage();
     };
 
     const handleSelectOpen = () => {
@@ -62,16 +74,22 @@ export default function Edit(props) {
 
     const handleSelectClose = () => {
         setSelectOpen(false);
+        clearErrorMessage();
     };
 
     const handleChange = event => {
         setStockStatus(event.target.value);
+        setSelectMessageProps('')
     };
+
+    const clearErrorMessage = () => setErrorMessageProps('')
 
     const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
     const onSubmit = async values => {
         await sleep(300)
+        setLoading(true)
+        clearErrorMessage()
 
         const {
             lot,
@@ -94,7 +112,7 @@ export default function Edit(props) {
             tag,
             store,
             unitValue,
-            outputDate,
+            outputDate: util.isNullOrUndefined(outputDate) ? outputDate : new Date(outputDate.concat(' 12:00')),
             outputQuantity,
             stockStatus: {
                 status: {
@@ -103,7 +121,24 @@ export default function Edit(props) {
             }
         }
 
-        await stockService.update(itemStock);
+        const result = await stockService.update(itemStock);
+
+        if (result.errors) {
+            const errors = result.errors
+            const message = errors.map(p => (
+                <li key={p.field}>{p.message}</li>
+            ))
+
+            setErrorMessageProps({
+                titleMessage: (<div><p>Atenção</p><br></br></div>),
+                children: message,
+                paragraph: true,
+                color: "error"
+            })
+
+            setLoading(false)
+            return
+        }
 
         window.location.reload();
     }
@@ -300,14 +335,24 @@ export default function Edit(props) {
                                                     ))}
                                                 </Select>
                                             </FormControl>
+                                            <Grid className={classes.error}>
+                                                <Typography
+                                                    {...errorMessageProps}
+                                                >
+                                                    {errorMessageProps.titleMessage}
+                                                    {errorMessageProps.children}
+                                                </Typography>
+                                            </Grid>
                                             <Grid item xs={12}>
-                                                <DialogActions>
+                                                <DialogActions className={classes.actions}>
                                                     <Button onClick={handleClose} color="primary">
                                                         Sair
                                                     </Button>
-                                                    <Button variant="contained" color="primary" type="submit">
-                                                        Salvar
-                                                    </Button>
+                                                    {loading ? (<CircularProgress></CircularProgress>) : (
+                                                        <Button variant="contained" color="primary" type="submit">
+                                                            Salvar
+                                                        </Button>
+                                                    )}
                                                 </DialogActions>
                                             </Grid>
                                         </Grid>

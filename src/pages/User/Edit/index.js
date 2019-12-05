@@ -9,6 +9,8 @@ import { Form, Field } from 'react-final-form'
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
+import Typography from '@material-ui/core/Typography';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -29,6 +31,13 @@ const useStyles = makeStyles(theme => ({
         margin: theme.spacing(1),
         width: 400,
     },
+    error: {
+        marginTop: 50,
+        marginLeft: 16
+    },
+    actions: {
+        marginTop: 10
+    }
 }));
 
 export default function Edit(props) {
@@ -36,8 +45,9 @@ export default function Edit(props) {
     const [profile, setProfile] = React.useState('');
     const classes = useStyles();
     const [selectOpen, setSelectOpen] = React.useState(false);
-
     const [maxWidth] = React.useState('sm');
+    const [errorMessageProps, setErrorMessageProps] = React.useState('');
+    const [loading, setLoading] = React.useState(false)
     const fullWidth = true;
 
     const handleClickOpen = () => {
@@ -47,12 +57,34 @@ export default function Edit(props) {
     const handleClose = () => {
         setOpen(false);
         setProfile();
+        clearErrorMessage();
     };
+
+    const handleChange = event => {
+        setProfile(event.target.value);
+    };
+
+    const handleSelectOpen = () => {
+        setSelectOpen(true);
+        clearErrorMessage();
+    };
+
+    const handleSelectClose = () => {
+        setSelectOpen(false);
+    };
+
+    const getProfileId = () => {
+        return isNumber(profile) ? profile : props.profile.id;
+    }
+
+    const clearErrorMessage = () => setErrorMessageProps('')
 
     const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
     const onSubmit = async values => {
         await sleep(300)
+        setLoading(true)
+        clearErrorMessage()
 
         const { name, username, password } = values;
 
@@ -64,25 +96,26 @@ export default function Edit(props) {
             profileId: getProfileId()
         }
 
-        await userService.update(user);
+        const result = await userService.update(user);
+
+        if (result.errors) {
+            const errors = result.errors
+            const message = errors.map(p => (
+                <li key={p.field}>{p.message}</li>
+            ))
+
+            setErrorMessageProps({
+                titleMessage: (<div><p>Atenção</p><br></br></div>),
+                children: message,
+                paragraph: true,
+                color: "error"
+            })
+
+            setLoading(false)
+            return
+        }
 
         window.location.reload();
-    }
-
-    const handleChange = event => {
-        setProfile(event.target.value);
-    };
-
-    const handleSelectOpen = () => {
-        setSelectOpen(true);
-    };
-
-    const handleSelectClose = () => {
-        setSelectOpen(false);
-    };
-
-    const getProfileId = () => {
-        return isNumber(profile) ? profile : props.profile.id;
     }
 
     return (
@@ -111,6 +144,12 @@ export default function Edit(props) {
                                 const errors = {}
                                 if (!values.name) {
                                     errors.name = "Este campo é obrigatório"
+                                }
+                                if (!values.username) {
+                                    errors.username = "Este campo é obrigatório"
+                                }
+                                if (!values.password) {
+                                    errors.password = "Este campo é obrigatório"
                                 }
                                 return errors
                             }}
@@ -177,14 +216,24 @@ export default function Edit(props) {
                                                     ))}
                                                 </Select>
                                             </FormControl>
+                                            <Grid className={classes.error}>
+                                                <Typography
+                                                    {...errorMessageProps}
+                                                >
+                                                    {errorMessageProps.titleMessage}
+                                                    {errorMessageProps.children}
+                                                </Typography>
+                                            </Grid>
                                             <Grid item xs={12}>
-                                                <DialogActions>
+                                                <DialogActions className={classes.actions}>
                                                     <Button onClick={handleClose} color="primary">
                                                         Sair
                                                     </Button>
-                                                    <Button variant="contained" color="primary" type="submit">
-                                                        Salvar
-                                                    </Button>
+                                                    {loading ? (<CircularProgress></CircularProgress>) : (
+                                                        <Button variant="contained" color="primary" type="submit">
+                                                            Salvar
+                                                        </Button>
+                                                    )}
                                                 </DialogActions>
                                             </Grid>
                                         </Grid>

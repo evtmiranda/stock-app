@@ -2,91 +2,138 @@ import { authHeader } from '../helpers';
 import { api } from '../services'
 
 async function get(filters) {
-    const config = {
-        headers: authHeader()
-    };
+    try {
+        const config = {
+            headers: authHeader()
+        };
 
-    const response = await api.get(`v1/stocks?${filters}`, config)
+        const response = await api.get(`v1/stocks?${filters}`, config)
 
-    const itemsStock = response.data;
+        const itemsStock = response.data;
 
-    return itemsStock;
+        return itemsStock;
+    } catch (error) {
+        return errorResponse(error)
+    }
 }
 
 async function getQuantityByStatus() {
-    const config = {
-        headers: authHeader()
-    };
+    try {
+        const config = {
+            headers: authHeader()
+        };
 
-    const response = await api.get(`v1/stocks/status`, config)
+        const response = await api.get(`v1/stocks/status`, config)
 
-    return response.data;
+        return response.data;
+    } catch (error) {
+        return errorResponse(error)
+    }
 }
 
 async function getQuantity(status) {
-    const config = {
-        headers: authHeader()
-    };
+    try {
+        const config = {
+            headers: authHeader()
+        };
 
-    const response = await api.get(`v1/stocks/${status}`, config)
+        const response = await api.get(`v1/stocks/${status}`, config)
 
-    return response.data;
+        return response.data;
+    } catch (error) {
+        return errorResponse(error)
+    }
 }
 
 async function getQuantityByClient() {
-    const config = {
-        headers: authHeader()
-    };
+    try {
+        const config = {
+            headers: authHeader()
+        };
 
-    const response = await api.get(`v1/stocks/client`, config)
+        const response = await api.get(`v1/stocks/client`, config)
 
-    return response.data;
+        return response.data;
+    } catch (error) {
+        return errorResponse(error)
+    }
 }
 
 async function getEntryAndOutQuantityByDay() {
-    const config = {
-        headers: authHeader()
-    };
+    try {
+        const config = {
+            headers: authHeader()
+        };
 
-    const response = await api.get(`v1/stocks/day`, config)
+        const response = await api.get(`v1/stocks/day`, config)
 
-    return response.data;
+        return response.data;
+    } catch (error) {
+        return errorResponse(error)
+    }
 }
 
 async function remove(id) {
-    const config = {
-        headers: authHeader()
-    };
+    try {
+        const config = {
+            headers: authHeader()
+        };
 
-    const response = await api.delete(`v1/stocks/${id}`, config)
+        const response = await api.delete(`v1/stocks/${id}`, config)
 
-    const rowsDeleted = response.data;
+        const rowsDeleted = response.data;
 
-    return rowsDeleted;
+        return rowsDeleted;
+    } catch (error) {
+        return errorResponse(error)
+    }
 }
 
 async function create(stockItem) {
-    const config = {
-        headers: authHeader()
-    };
+    try {
+        const config = {
+            headers: authHeader()
+        };
 
-    const response = await api.post(`v1/stocks`, stockItem, config)
+        const response = await api.post(`v1/stocks`, stockItem, config)
 
-    const createdStockItem = response.data;
+        const createdStockItem = response.data;
 
-    return createdStockItem;
+        return createdStockItem;
+    } catch (error) {
+        return errorResponse(error)
+    }
 }
 
 async function update(stockItem) {
-    const config = {
-        headers: authHeader()
-    };
+    try {
+        const config = {
+            headers: authHeader()
+        };
 
-    const response = await api.put(`v1/stocks/${stockItem.id}`, stockItem, config)
+        const response = await api.put(`v1/stocks/${stockItem.id}`, stockItem, config)
 
-    const updatedStockItem = response.data;
+        const updatedStockItem = response.data;
 
-    return updatedStockItem;
+        return updatedStockItem;
+    } catch (error) {
+        return errorResponse(error)
+    }
+}
+
+function errorResponse(error) {
+    if (error.response) {
+        return error.response.data
+    }
+    else {
+        return {
+            errors: [
+                {
+                    erro: "Oops, ocorreu algo inesperado, por favor, tente novamente"
+                }
+            ]
+        }
+    }
 }
 
 export const stockService = {
