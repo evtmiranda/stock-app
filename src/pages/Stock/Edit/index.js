@@ -79,7 +79,6 @@ export default function Edit(props) {
 
     const handleChange = event => {
         setStockStatus(event.target.value);
-        setSelectMessageProps('')
     };
 
     const clearErrorMessage = () => setErrorMessageProps('')
