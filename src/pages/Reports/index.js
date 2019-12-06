@@ -142,12 +142,10 @@ export class Reports extends Component {
                             <Grid container justify="center" spacing={3}>
                                 <Grid item xs={12} sm={2}>
                                     <KeyboardDatePicker
-                                        disableToolbar
-                                        variant="inline"
-                                        format="dd/MM/yyyy"
                                         margin="normal"
-                                        id="date-picker-inline"
+                                        id="date-picker-dialog"
                                         label="Data início"
+                                        format="dd/MM/yyyy"
                                         value={this.state.fromDate}
                                         onChange={this.handleFromDateChange}
                                         KeyboardButtonProps={{
